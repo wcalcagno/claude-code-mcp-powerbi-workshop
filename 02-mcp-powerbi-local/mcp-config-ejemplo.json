@@ -1,0 +1,65 @@
+{
+  "_COMO_USAR_ESTE_ARCHIVO": [
+    "Este es un EJEMPLO. No lo uses tal cual: cópialo a la raíz del repositorio",
+    "con el nombre .mcp.json y reemplaza los placeholders por tus rutas reales.",
+    "",
+    "PASO 1: copia este archivo a la raiz del proyecto como .mcp.json",
+    "PASO 2: reemplaza TU_USUARIO y el nombre del script por los valores reales",
+    "PASO 3: BORRA todas las claves que empiezan con guion bajo (_). Son solo",
+    "        comentarios para este ejemplo; JSON no admite comentarios reales.",
+    "PASO 4: sal de Claude Code con /exit y vuelve a entrar con claude",
+    "PASO 5: dentro de Claude Code escribe /mcp y confirma que dice connected"
+  ],
+
+  "_NOTA_CREDENCIALES": [
+    "Fijate que aqui NO hay usuario, contrasena, token ni cadena de conexion.",
+    "No hacen falta: el servidor se conecta al motor de Analysis Services que",
+    "Power BI Desktop levanta en TU PROPIO computador mientras tienes un .pbix",
+    "abierto. Es una conexion local a un proceso local.",
+    "Por eso este archivo SI se puede compartir sin riesgo."
+  ],
+
+  "_NOTA_SOLO_LECTURA": [
+    "Este servidor es de SOLO LECTURA. Lee tablas, columnas, relaciones y",
+    "medidas, y ejecuta consultas DAX. No crea, no modifica y no elimina nada",
+    "del modelo. Es una decision de diseno del taller: si alguien aprueba una",
+    "accion sin leerla, el peor caso posible es una consulta inutil."
+  ],
+
+  "mcpServers": {
+    "powerbi-local": {
+      "_comentario_nombre": "powerbi-local es el nombre que veras al escribir /mcp. Puedes cambiarlo.",
+
+      "_comentario_type": "stdio significa que el servidor corre como un proceso local en tu PC y se comunica por entrada/salida estandar. Es lo normal para servidores MCP locales.",
+      "type": "stdio",
+
+      "_comentario_command": "El programa que levanta el servidor. Usar 'python' a secas toma el primero del PATH de Windows. Si tienes varios Python instalados, pon la ruta completa al ejecutable, por ejemplo: C:/Users/TU_USUARIO/AppData/Local/Programs/Python/Python312/python.exe",
+      "command": "python",
+
+      "_comentario_args": [
+        "Los argumentos que recibe el comando anterior. Aqui va la ruta completa",
+        "al script principal del servidor MCP que clonaste.",
+        "",
+        "IMPORTANTE sobre las rutas en Windows:",
+        "  - Usa barras normales /  -->  C:/Users/ana/workshops/...",
+        "  - O barras invertidas DOBLES \\\\  -->  C:\\\\Users\\\\ana\\\\workshops\\\\...",
+        "  - Una sola barra invertida \\ rompe el JSON.",
+        "",
+        "El nombre del script puede variar segun la version del repositorio.",
+        "Revisa la carpeta que clonaste y usa el archivo .py principal.",
+        "Verifica la ruta en PowerShell con:  Test-Path 'C:/ruta/a/server.py'",
+        "Debe responder True."
+      ],
+      "args": [
+        "C:/Users/TU_USUARIO/workshops/powerbi-mcp-server/server.py"
+      ],
+
+      "_comentario_env": [
+        "Variables de entorno para el servidor. Normalmente NO hacen falta para",
+        "la conexion local. Si el README del servidor pide alguna, agregala aqui.",
+        "Nunca pongas secretos en este archivo si lo vas a subir a GitHub."
+      ],
+      "env": {}
+    }
+  }
+}

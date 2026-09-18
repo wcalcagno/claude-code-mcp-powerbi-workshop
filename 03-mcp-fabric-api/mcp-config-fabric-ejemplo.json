@@ -1,0 +1,85 @@
+{
+  "_COMO_USAR_ESTE_ARCHIVO": [
+    "Este es un EJEMPLO. No lo uses tal cual.",
+    "",
+    "PASO 1: copia el bloque mcpServers a tu .mcp.json en la raiz del proyecto",
+    "        (si ya tienes uno del bloque 2, agrega esta entrada junto a la otra)",
+    "PASO 2: reemplaza ENDPOINT_OFICIAL_MICROSOFT_MCP por la URL real que",
+    "        publica Microsoft en su documentacion (el servidor esta en PREVIEW",
+    "        y la URL puede cambiar: cópiala de la doc el dia del taller)",
+    "PASO 3: reemplaza TU_TENANT_ID y TU_CLIENT_ID por tus valores",
+    "PASO 4: BORRA todas las claves que empiezan con guion bajo (_). Son solo",
+    "        comentarios para este ejemplo; JSON no admite comentarios reales.",
+    "PASO 5: sal de Claude Code con /exit, vuelve con claude, y escribe /mcp",
+    "        para iniciar el flujo de autenticacion"
+  ],
+
+  "_NOTA_PREVIEW": [
+    "El servidor MCP remoto de Microsoft para Power BI / Fabric esta en PREVIEW.",
+    "La URL del endpoint, los nombres de las herramientas y los permisos pueden",
+    "cambiar sin aviso. Verifica siempre la documentacion oficial antes de",
+    "configurarlo. Ver recursos/enlaces.md"
+  ],
+
+  "_NOTA_SEGURIDAD": [
+    "NUNCA escribas aqui un token, un client secret ni una contrasena.",
+    "",
+    "El tenant_id y el client_id son identificadores tipo GUID y NO son secretos:",
+    "identifican, no autentican. Aun asi, este archivo de ejemplo usa placeholders",
+    "y el .gitignore del repo ignora .mcp.local.json y mcp-config.local.json.",
+    "",
+    "El token de acceso se obtiene al autenticarte con el flujo device code y lo",
+    "administra Claude Code en memoria / en su almacenamiento seguro. No se",
+    "escribe en este archivo."
+  ],
+
+  "_NOTA_MODO_CONSULTA": [
+    "En este taller usamos este servidor en modo CONSULTA: listar workspaces,",
+    "listar semantic models y ejecutar consultas DAX de lectura.",
+    "No realizamos operaciones de escritura sobre el Service ni sobre Fabric.",
+    "Ademas, tus permisos de Entra ID son el limite real: solo veras aquello a",
+    "lo que tu cuenta ya tiene acceso en Power BI Service."
+  ],
+
+  "mcpServers": {
+    "powerbi-fabric": {
+      "_comentario_nombre": "powerbi-fabric es el nombre que veras al escribir /mcp. Puedes cambiarlo.",
+
+      "_comentario_type": "http significa que es un servidor REMOTO, al que se llega por HTTPS. A diferencia del MCP local del bloque 2, aqui no se levanta ningun proceso en tu PC.",
+      "type": "http",
+
+      "_comentario_url": [
+        "La direccion del servidor MCP remoto de Microsoft.",
+        "PLACEHOLDER: reemplaza por la URL oficial vigente.",
+        "Esta en preview: cópiala de la documentacion de Microsoft, no de aqui."
+      ],
+      "url": "ENDPOINT_OFICIAL_MICROSOFT_MCP",
+
+      "_comentario_headers": [
+        "Cabeceras HTTP adicionales. Normalmente NO hacen falta: la autenticacion",
+        "se resuelve con el flujo interactivo que inicia /mcp en Claude Code.",
+        "",
+        "NO pongas aqui un Authorization: Bearer <token> escrito a mano. Los tokens",
+        "expiran en una hora y dejarlo en un archivo es un riesgo innecesario."
+      ],
+      "headers": {},
+
+      "_comentario_env": [
+        "Variables de entorno para el cliente. Solo si la documentacion oficial",
+        "del servidor las pide explicitamente.",
+        "",
+        "TU_TENANT_ID: el GUID de tu organizacion en Entra ID.",
+        "  Donde sacarlo: Power BI Service > ? > Acerca de Power BI",
+        "  o portal.azure.com > Microsoft Entra ID > Overview > Tenant ID",
+        "",
+        "TU_CLIENT_ID: el GUID de la aplicacion cliente con la que te autenticas.",
+        "  Si Microsoft documenta un client ID publico para el preview, usa ese.",
+        "  Si tu empresa registro una app propia, pideselo al area de TI."
+      ],
+      "env": {
+        "POWERBI_TENANT_ID": "TU_TENANT_ID",
+        "POWERBI_CLIENT_ID": "TU_CLIENT_ID"
+      }
+    }
+  }
+}

@@ -1,0 +1,122 @@
+# =============================================================
+# Credenciales y secretos — NUNCA deben llegar a GitHub
+# =============================================================
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+*.p12
+secrets.json
+credentials.json
+token.json
+tokens.json
+*.token
+*_token*
+*.secret
+.msal_cache
+.azure/
+
+# Configuración local de MCP que pudiera contener IDs o secretos reales
+mcp-config.local.json
+.mcp.local.json
+
+# =============================================================
+# Power BI — archivos de modelo con datos reales
+# =============================================================
+*.pbix
+*.pbit
+*.pbids
+# Si necesitas versionar un modelo de ejemplo SIN datos sensibles,
+# habilítalo explícitamente, por ejemplo:
+# !ejemplos/modelo-demo.pbix
+
+# Exportaciones de datos que podrían contener información real
+*.csv
+*.xlsx
+*.xls
+!**/plantillas/*.csv
+
+# =============================================================
+# Python
+# =============================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Entornos virtuales
+.venv/
+venv/
+env/
+ENV/
+
+# Herramientas y caches de Python
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.ipynb_checkpoints/
+
+# =============================================================
+# Node / npm
+# =============================================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.npm/
+.pnpm-store/
+.yarn/
+.next/
+.cache/
+
+# =============================================================
+# Editores e IDEs
+# =============================================================
+.vscode/
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+
+# =============================================================
+# Sistema operativo
+# =============================================================
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+
+# =============================================================
+# Claude Code — configuración local de cada persona
+# =============================================================
+.claude/settings.local.json
+
+# =============================================================
+# Salidas generadas durante el workshop
+# =============================================================
+salida/
+output/
+*.log
