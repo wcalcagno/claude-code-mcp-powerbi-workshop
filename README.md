@@ -16,8 +16,9 @@ Al terminar el workshop vas a poder:
 3. Conectar Claude Code a tu **modelo local de Power BI Desktop** mediante un
    servidor MCP **de solo lectura**, para explorar tablas, relaciones, medidas y
    correr consultas DAX.
-4. Conectar Claude Code al **Power BI Service / Fabric** vía el MCP remoto oficial
-   de Microsoft (en preview), autenticándote con tu propia identidad de Entra ID.
+4. Conectar Claude Code a **Microsoft Fabric / Power BI Service** vía **Fabric IQ**,
+   el MCP remoto oficial de Microsoft — también de solo lectura —, autenticándote
+   con tu propia identidad de Entra ID.
 5. Documentar hallazgos en Markdown y dejarlos **commiteados en GitHub**.
 
 > No necesitas saber programar. Si nunca abriste una terminal, este material está
@@ -49,23 +50,28 @@ está pensado para resolverlo, pero llegar con esto listo te da más tiempo prá
 | **Power BI Desktop** | Instalado, y con **un modelo abierto** durante el workshop (cualquier `.pbix` con datos). Es obligatorio: el endpoint local que usa el MCP solo existe mientras Power BI Desktop tiene un reporte abierto. |
 | **Python 3.8 o superior** | Necesario para el servidor MCP local. Verifica con `python --version`. |
 | **Cuenta de GitHub** | Gratuita. Si no tienes, la creamos en el bloque de Setup. |
-| **Acceso a un semantic model** | En Power BI Service o Fabric, con permiso **Build** (el rol *Viewer* no siempre basta). Para el bloque 3. |
+| **Acceso a un reporte o semantic model** | En Power BI Service o Fabric. Basta con que puedas abrirlo: **no necesitas permiso Build ni rol en el workspace.** Para el bloque 3. |
 | **Cuenta de Claude** | Con acceso a Claude Code (plan Pro / Max, o API). |
 
-### ⚠️ Dos requisitos del bloque 3 que dependen de tu área de TI
+### ⚠️ Un requisito del bloque 3 que conviene resolver antes
 
-El bloque de Fabric usa el endpoint oficial de Microsoft, que está en **preview**
-y exige dos cosas que **no puedes resolver tú solo el día del taller**:
+El bloque de Fabric usa **Fabric IQ**, el servidor MCP oficial de Microsoft
+(disponible de forma general). Para conectarse desde Claude Code hace falta un
+**registro de aplicación en Entra ID** con tres permisos delegados de lectura.
 
-| Requisito | Quién lo habilita |
+| Requisito | Quién lo hace |
 |---|---|
-| Tenant setting *"Users can use the Power BI Model Context Protocol server endpoint (preview)"* | Tu **administrador de Power BI** |
-| Un registro de aplicación en **Entra ID** con permisos delegados de lectura | Tú, si puedes registrar apps; si no, tu admin de Entra ID |
+| Registro de app en **Entra ID** con `Item.Read.All`, `Item.Execute.All` y `Dataset.Read.All` | Tú, si puedes registrar apps; si no, tu admin de Entra ID |
 
-> 🔴 **Gestiónalos con varios días de anticipación.** En una empresa grande esto
-> puede tomar tiempo. Si llegas al bloque 3 sin resolverlo, vas a poder leer y
-> entender el flujo, pero no ejecutarlo en vivo. El detalle está en el
-> [README del bloque 3](./03-mcp-fabric-api/README.md#prerrequisitos-de-este-bloque).
+> 🟡 **Los tres permisos no requieren consentimiento de administrador por
+> defecto** — tú mismo puedes consentirlos. Pero si tu tenant restringe el
+> consentimiento de usuarios, vas a necesitar que alguien de TI lo apruebe una
+> vez. **Averígualo con anticipación.** El paso a paso está en el
+> [README del bloque 3](./03-mcp-fabric-api/README.md#configuración).
+>
+> 📍 **Fabric IQ no está disponible** en regiones *Power BI-only* ni en nubes
+> soberanas: el *home region* de tu tenant debe soportar todas las cargas de
+> trabajo de Fabric.
 
 ---
 
@@ -76,7 +82,7 @@ y exige dos cosas que **no puedes resolver tú solo el día del taller**:
 | **15 min** | [00 · Setup](./00-setup/) | Instalar Git en Windows, configurar GitHub, instalar Claude Code. |
 | **15 min** | [01 · Claude Code básico](./01-claude-code-basico/README.md) | Qué es, en qué se diferencia de Claude.ai, comandos esenciales, primer commit. |
 | **35 min** | [02 · MCP Power BI local](./02-mcp-powerbi-local/README.md) | Servidor MCP **de solo lectura** sobre Power BI Desktop: explorar el modelo, consultar DAX, documentar medidas. |
-| **35 min** | [03 · MCP Fabric / API](./03-mcp-fabric-api/README.md) | **Power BI Consumption MCP server** oficial de Microsoft (preview), autenticación Entra ID delegada, consultar el esquema y ejecutar DAX contra el Service. |
+| **35 min** | [03 · MCP Fabric / API](./03-mcp-fabric-api/README.md) | **Fabric IQ**, el MCP oficial de Microsoft (GA, solo lectura): autenticación Entra ID delegada, descubrir contenido por nombre, leer esquemas y ejecutar DAX contra Fabric. |
 | **20 min** | [04 · Flujo completo](./04-flujo-completo/README.md) | Ejercicio integrador: comparar local vs. Service, documentar y commitear. Cierre y preguntas. |
 
 ---
@@ -94,24 +100,30 @@ y exige dos cosas que **no puedes resolver tú solo el día del taller**:
    - [Ejercicio 3 · Documentar medidas](./02-mcp-powerbi-local/ejercicios/03-documentar-medidas.md)
 4. **[03-mcp-fabric-api/](./03-mcp-fabric-api/README.md)**
    - [Ejercicio 1 · Autenticación Entra ID](./03-mcp-fabric-api/ejercicios/01-autenticacion-entra-id.md)
-   - [Ejercicio 2 · Consultar un modelo del Service](./03-mcp-fabric-api/ejercicios/02-consultar-workspace-fabric.md)
+   - [Ejercicio 2 · Explorar y consultar en Fabric](./03-mcp-fabric-api/ejercicios/02-consultar-workspace-fabric.md)
 5. **[04-flujo-completo/](./04-flujo-completo/README.md)**
 6. **[recursos/enlaces.md](./recursos/enlaces.md)**
 
 ---
 
-## Una nota importante: el MCP local es de solo lectura
+## Una nota importante: los dos MCP son de solo lectura
 
-El servidor MCP que usamos sobre Power BI Desktop es **de solo lectura**.
-Puede *leer* el modelo (tablas, columnas, relaciones, medidas) y *ejecutar
-consultas DAX*, pero **no crea, no modifica ni elimina nada** en tu modelo.
+**Ninguno de los servidores que vas a usar puede modificar tus modelos.**
+
+| Bloque | Servidor | Qué puede hacer |
+|---|---|---|
+| 02 | Power BI Desktop MCP Server | Leer el modelo y ejecutar DAX. Nada más. |
+| 03 | **Fabric IQ** (oficial de Microsoft) | Descubrir contenido, leer esquemas y ejecutar DAX. Nada más. |
 
 Esto es una **decisión de diseño del taller**, no una carencia. En un taller con
 muchas personas aprendiendo a la vez, es esperable que alguien apruebe una acción
-de Claude Code sin leerla con atención. Con un servidor de solo lectura, el peor
+de Claude Code sin leerla con atención. Con servidores de solo lectura, el peor
 caso posible es una consulta que no sirve — nunca un modelo dañado.
 
-Lo mismo aplica al bloque de Fabric: trabajamos en modo **consulta**, no de escritura.
+Existen servidores MCP que **sí** crean y modifican modelos, incluidos los
+oficiales de Microsoft. Son herramientas legítimas para tu trabajo diario, con
+control de versiones y revisión de cambios detrás. **Los dejamos fuera a
+propósito**, y el material explica dónde encontrarlos cuando los necesites.
 
 ---
 

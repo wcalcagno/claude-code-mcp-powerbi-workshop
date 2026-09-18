@@ -5,98 +5,108 @@
     "La forma RECOMENDADA de registrar este servidor es con el comando:",
     "",
     "  claude mcp add --transport http --client-id TU_CLIENT_ID --callback-port 8080 \\",
-    "      powerbi-fabric https://api.fabric.microsoft.com/v1/mcp/powerbi",
+    "      -H \"X-Variants: Fabric.Routing.FabricIQ.V1\" \\",
+    "      fabric-iq https://fabriciq.svc.cloud.microsoft/v1/mcp/fabriciq",
     "",
-    "Ese comando ademas deja registrado el client ID y el puerto de callback,",
-    "que son necesarios para el login y que NO se configuran desde este archivo.",
+    "Ese comando ademas deja registrado el client ID y el puerto de callback, que",
+    "son necesarios para el login y que NO se configuran desde este archivo.",
     "",
     "Si prefieres editar la configuracion a mano:",
     "PASO 1: copia el bloque mcpServers a tu .mcp.json en la raiz del proyecto",
     "        (si ya tienes uno del bloque 2, agrega esta entrada junto a la otra)",
     "PASO 2: BORRA todas las claves que empiezan con guion bajo (_). Son solo",
     "        comentarios para este ejemplo; JSON no admite comentarios reales.",
-    "PASO 3: sal de Claude Code con /exit, vuelve con claude, y escribe /mcp",
+    "PASO 3: registra igual el client ID con 'claude mcp add', o el login fallara",
+    "PASO 4: sal de Claude Code con /exit, vuelve con claude, y escribe /mcp",
     "        para iniciar el flujo de autenticacion"
   ],
 
-  "_ENDPOINTS_OFICIALES_MICROSOFT": [
-    "Microsoft publica dos servidores MCP hospedados para Power BI:",
+  "_QUE_ES_FABRIC_IQ": [
+    "Fabric IQ MCP es el servidor MCP remoto oficial de Microsoft para CONSUMIR",
+    "datos de Power BI: reportes y semantic models en Microsoft Fabric.",
     "",
-    "  CONSUMPTION (el que usa este taller) - consulta, no escribe:",
-    "    https://api.fabric.microsoft.com/v1/mcp/powerbi",
+    "Esta disponible de forma general (GA), no en preview.",
     "",
-    "  AUTHORING (NO lo usamos) - lee Y ESCRIBE el modelo:",
-    "    https://api.fabric.microsoft.com/v1/mcp/powerbi/authoring",
-    "",
-    "Existe ademas Fabric IQ, que Microsoft senala hoy como el camino preferente",
-    "para escenarios de consumo:",
-    "    https://fabriciq.svc.cloud.microsoft/v1/mcp/FabricIQ",
-    "",
-    "Este taller usa CONSUMPTION de forma deliberada: es el que no puede",
-    "modificar semantic models. Misma logica que el MCP local del bloque 2."
+    "Microsoft lo define como un conjunto de herramientas de SOLO LECTURA. No",
+    "ofrece administracion de workspaces, desarrollo ni creacion de items. Para",
+    "esas operaciones existen otros servidores MCP de Fabric, que este taller",
+    "no usa de forma deliberada."
   ],
 
-  "_NOTA_PREVIEW": [
-    "El endpoint de Consumption esta en PREVIEW. Las definiciones de las",
-    "herramientas, los formatos de solicitud y los esquemas de respuesta pueden",
-    "cambiar. Verifica la documentacion oficial antes de usarlo:",
-    "https://learn.microsoft.com/es-es/power-bi/developer/mcp/",
+  "_ENDPOINTS": [
+    "Endpoint normal:",
+    "    https://fabriciq.svc.cloud.microsoft/v1/mcp/fabriciq",
     "",
-    "Ademas, tu administrador de Power BI debe habilitar el tenant setting:",
-    "'Users can use the Power BI Model Context Protocol server endpoint (preview)'",
-    "Sin eso, el endpoint no responde."
+    "Si tu organizacion usa private links:",
+    "    https://api.fabric.microsoft.com/v1/mcp/fabriciq",
+    "",
+    "Si obtienes un 404, prueba la variante en mayusculas .../v1/mcp/FabricIQ :",
+    "la documentacion de Microsoft muestra ambas grafias en paginas distintas."
+  ],
+
+  "_LAS_SEIS_HERRAMIENTAS": [
+    "  DiscoverArtifacts      : busca reportes y semantic models por NOMBRE",
+    "  ResolveFabricItem      : resuelve la URL de un item de Fabric",
+    "  GetSemanticModelSchema : tablas, columnas, medidas, relaciones",
+    "  GetReportMetadata      : paginas, visuales y filtros de un reporte",
+    "  ValueSearch            : busca valores almacenados dentro de un modelo",
+    "  ExecuteQuery           : ejecuta DAX contra un semantic model",
+    "",
+    "Las seis leen. Ninguna escribe.",
+    "",
+    "No necesitas IDs para partir: basta el NOMBRE de un reporte o modelo, o",
+    "pegar su URL del navegador (no un share link)."
   ],
 
   "_NOTA_SEGURIDAD": [
     "NUNCA escribas aqui un token, un client secret ni una contrasena.",
     "",
-    "El client ID y el tenant ID son identificadores tipo GUID y NO son secretos:",
-    "identifican, no autentican. Aun asi, este ejemplo usa placeholders.",
+    "IMPORTANTE: no agregues una cabecera Authorization con un bearer token.",
+    "Microsoft advierte que una cabecera Authorization configurada ANULA el",
+    "flujo OAuth interactivo y la gestion automatica de tokens. Si el token",
+    "expira, la conexion queda rota hasta que quites la cabecera.",
     "",
-    "El token de acceso se obtiene al autenticarte y lo administra Claude Code en",
-    "su almacenamiento seguro, con refresco automatico. No se escribe aqui.",
+    "El client ID y el tenant ID son identificadores tipo GUID y NO son secretos:",
+    "identifican, no autentican. Aun asi, este ejemplo usa un placeholder.",
     "",
     "La app de Entra ID es un cliente PUBLICO (aplicacion de escritorio): no",
-    "maneja client secret. La seguridad la dan el redirect URI registrado y PKCE."
-  ],
-
-  "_NOTA_MODO_CONSULTA": [
-    "Las cuatro herramientas de este servidor son de consulta:",
-    "  - Get Semantic Model Schema : tablas, columnas, medidas, relaciones",
-    "  - Execute Query             : ejecuta DAX y devuelve resultados",
-    "  - Get Report Metadata       : paginas, visuales y filtros de un reporte",
-    "  - Generate Query            : genera DAX con Copilot (requiere licencia)",
+    "maneja client secret. La seguridad la dan el redirect URI registrado y PKCE.",
     "",
-    "OJO: no existe una herramienta para listar workspaces ni semantic models.",
-    "Tu le entregas el ID del semantic model, sacado de la URL del Service:",
-    "  https://app.powerbi.com/groups/{workspaceId}/datasets/{semanticModelId}",
-    "",
-    "Ademas, tus permisos de Entra ID son el limite real: solo accedes a los",
-    "modelos sobre los que ya tienes permiso Build, y tu RLS se respeta."
+    "Fabric IQ NO admite service principal ni autenticacion application-only.",
+    "Solo identidad delegada, y tu RLS y OLS se siguen aplicando."
   ],
 
   "mcpServers": {
-    "powerbi-fabric": {
-      "_comentario_nombre": "powerbi-fabric es el nombre que veras al escribir /mcp. Puedes cambiarlo.",
+    "fabric-iq": {
+      "_comentario_nombre": "fabric-iq es el nombre que veras al escribir /mcp. Puedes cambiarlo.",
 
       "_comentario_type": "http significa que es un servidor REMOTO, al que se llega por HTTPS. A diferencia del MCP local del bloque 2, aqui no se levanta ningun proceso en tu PC.",
       "type": "http",
 
       "_comentario_url": [
-        "Endpoint oficial del Power BI Consumption MCP server.",
+        "Endpoint oficial de Fabric IQ MCP.",
         "Este valor es real y esta tomado de la documentacion de Microsoft.",
-        "Esta en preview: confirmalo en la doc el dia que hagas el taller."
+        "Con private links, usa https://api.fabric.microsoft.com/v1/mcp/fabriciq"
       ],
-      "url": "https://api.fabric.microsoft.com/v1/mcp/powerbi",
+      "url": "https://fabriciq.svc.cloud.microsoft/v1/mcp/fabriciq",
 
       "_comentario_headers": [
-        "Cabeceras HTTP adicionales. NO hacen falta: la autenticacion se resuelve",
-        "con el flujo OAuth que inicia /mcp en Claude Code.",
+        "X-Variants fija la VERSION DEL CONTRATO DE HERRAMIENTAS: sus nombres,",
+        "esquemas de entrada y comportamiento. La version publica actual es",
+        "Fabric.Routing.FabricIQ.V1",
         "",
-        "NO pongas aqui un Authorization: Bearer <token> escrito a mano. Los tokens",
-        "expiran en una hora y dejarlo en un archivo es un riesgo innecesario."
+        "Fijarlo es opcional pero recomendable en un taller: garantiza que todos",
+        "vean las mismas seis herramientas aunque Microsoft publique una version",
+        "nueva como predeterminada.",
+        "",
+        "OJO: el v1 de la URL NO es la version del contrato. Es parte de la",
+        "direccion del endpoint. Son dos cosas distintas.",
+        "",
+        "NO agregues aqui una cabecera Authorization. Ver _NOTA_SEGURIDAD."
       ],
-      "headers": {}
+      "headers": {
+        "X-Variants": "Fabric.Routing.FabricIQ.V1"
+      }
     }
   }
 }

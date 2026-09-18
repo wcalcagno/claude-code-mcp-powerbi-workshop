@@ -51,15 +51,18 @@ Markdown**, archivos de configuración de ejemplo y ejercicios guiados.
   `C:/RUTA/A/TU/SCRIPT.py`.
 - **Los endpoints oficiales de Microsoft sí van escritos con su valor real**,
   porque están publicados en la documentación y no son secretos:
-  - Power BI **Consumption** MCP (el del taller):
-    `https://api.fabric.microsoft.com/v1/mcp/powerbi`
-  - Power BI **Authoring** MCP (el que escribe, **no** se usa en el taller):
+  - **Fabric IQ MCP** (el del bloque 3, GA, solo lectura):
+    `https://fabriciq.svc.cloud.microsoft/v1/mcp/fabriciq`
+    (con private links: `https://api.fabric.microsoft.com/v1/mcp/fabriciq`)
+  - Power BI **Authoring** MCP (escribe, **no** se usa en el taller):
     `https://api.fabric.microsoft.com/v1/mcp/powerbi/authoring`
-  - **Fabric IQ** MCP: `https://fabriciq.svc.cloud.microsoft/v1/mcp/FabricIQ`
-- El endpoint de Consumption está **en preview**: cada vez que lo menciones,
-  acompáñalo de esa advertencia y del enlace a la documentación oficial.
+  - Power BI **Consumption** MCP (endpoint de consulta anterior, en preview,
+    **no** se usa en el taller): `https://api.fabric.microsoft.com/v1/mcp/powerbi`
+- Fabric IQ está **disponible de forma general (GA)**, no en preview. No lo
+  describas como preview.
 - Lo que sí son secretos, y nunca se escriben en un archivo: tokens, client
-  secrets y contraseñas.
+  secrets y contraseñas. Y **nunca** propongas una cabecera `Authorization` para
+  Fabric IQ: anula el flujo OAuth y la gestión automática de tokens.
 
 ---
 
@@ -88,8 +91,10 @@ haya que disculpar.** La razón:
   `.md` de las medidas), deja claro que esa escritura la hace **Claude Code
   directamente sobre el sistema de archivos**, no el MCP. El MCP solo aportó la
   lectura de los datos.
-- El bloque de Fabric / Power BI Service también se trabaja en **modo consulta**,
-  no de escritura.
+- El bloque de Fabric usa **Fabric IQ**, que Microsoft define explícitamente como
+  un conjunto de herramientas de **solo lectura** para escenarios de consumo.
+  Refuerza ese paralelo con el bloque 2: los dos servidores del taller son
+  incapaces de escribir, y eso es el hilo conductor del material.
 
 ---
 

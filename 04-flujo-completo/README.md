@@ -40,7 +40,7 @@ confirmar que no hay), y dejarlo todo commiteado.
 
 - [ ] **Power BI Desktop abierto** con el `.pbix` del bloque 2.
 - [ ] `/mcp` muestra **ambos** servidores como `connected`:
-      `powerbi-local` y `powerbi-fabric`.
+      `powerbi-local` y `fabric-iq`.
 - [ ] Estás en la carpeta del workshop, con Claude Code abierto.
 
 ### Verifica que tienes las dos conexiones vivas
@@ -53,13 +53,13 @@ confirmar que no hay), y dejarlo todo commiteado.
 
 ```
 powerbi-local     ✔ connected    (N tools)
-powerbi-fabric    ✔ connected    (M tools)
+fabric-iq         ✔ connected    (6 tools)
 ```
 
 > 🔴 Si `powerbi-local` está caído, casi seguro cerraste Power BI Desktop.
 > Ábrelo con un `.pbix` y reinicia Claude Code.
 >
-> 🔴 Si `powerbi-fabric` está caído, el token expiró. Escribe `/mcp` y vuelve a
+> 🔴 Si `fabric-iq` está caído, el token expiró. Escribe `/mcp` y vuelve a
 > autenticarte — toma menos de un minuto.
 
 > 💡 **Ideal:** que el `.pbix` local y el semantic model del Service sean **el
@@ -78,7 +78,7 @@ No compares "todo". Elige **un indicador concreto** y defiéndelo.
 ```
 Vamos a hacer un ejercicio de comparación entre mi modelo local de Power BI
 Desktop (MCP powerbi-local) y el semantic model publicado en el Service
-(MCP powerbi-fabric).
+(MCP fabric-iq).
 
 Primero, ayúdame a elegir qué comparar. Propón un indicador que:
 - Exista en ambos modelos
@@ -116,21 +116,21 @@ Muéstrame también la consulta que usaste.
 
 ---
 
-## Paso 3 · Obtener el mismo dato del SERVICE
+## Paso 3 · Obtener el mismo dato desde FABRIC
 
 ### Prompt sugerido
 
 ```
-Ahora, usando el MCP powerbi-fabric, ejecuta la MISMA consulta DAX contra
-el semantic model ventas-prod publicado en el Service.
-Etiqueta el resultado como "SERVICE".
+Ahora, usando el MCP fabric-iq, busca el semantic model publicado y ejecuta
+contra él la MISMA consulta DAX.
+Etiqueta el resultado como "FABRIC".
 ```
 
 ### Antes de seguir: anota la fecha del último refresco
 
-Este dato **no lo entrega el MCP** — el servidor de Consumption lee el esquema y
-ejecuta DAX, pero no expone el historial de actualizaciones. Lo sacas tú del
-Service, y es la pieza clave del diagnóstico:
+Este dato **no lo entrega el MCP** — Fabric IQ lee esquemas y ejecuta DAX, pero
+no expone el historial de actualizaciones. Lo sacas tú del Service, y es la pieza
+clave del diagnóstico:
 
 1. Abre <https://app.powerbi.com> y entra al workspace.
 2. En la fila del semantic model, mira la columna **Actualizado** (*Refreshed*).
@@ -145,7 +145,7 @@ DD-MM-AAAA a las HH:MM. Tenlo presente para el diagnóstico.
 
 ### Resultado esperado
 
-| Año | Total Ventas (SERVICE) |
+| Año | Total Ventas (FABRIC) |
 |---|---|
 | 2024 | 3.980.115 |
 | 2023 | 5.220.110 |
@@ -163,7 +163,7 @@ Acá es donde el ejercicio se pone interesante.
 
 ```
 Compara los dos resultados en una sola tabla, con columnas:
-año, valor LOCAL, valor SERVICE, diferencia absoluta y diferencia porcentual.
+año, valor LOCAL, valor FABRIC, diferencia absoluta y diferencia porcentual.
 
 Después, dame un diagnóstico:
 - ¿Hay diferencias? ¿En qué años?
@@ -179,7 +179,7 @@ hipótesis tuya. No inventes causas que no puedas sostener con los datos.
 
 Una tabla comparativa:
 
-| Año | LOCAL | SERVICE | Diferencia | % |
+| Año | LOCAL | FABRIC | Diferencia | % |
 |---|---|---|---|---|
 | 2024 | 4.102.330 | 3.980.115 | **122.215** | **3,1%** |
 | 2023 | 5.220.110 | 5.220.110 | 0 | 0,0% |
@@ -367,8 +367,8 @@ que están tus archivos nuevos.
  (MCP de SOLO LECTURA)                            tablas, DAX, documentación
       │
       ▼
- Claude Code conectado al Service / Fabric     ← bloque 03
- (Consumption MCP + Entra ID, modo consulta)      esquema, reportes, DAX
+ Claude Code conectado a Fabric                ← bloque 03
+ (Fabric IQ MCP, solo lectura + Entra ID)         descubrir, esquema, DAX
       │
       ▼
  Un análisis real, documentado y versionado    ← bloque 04
@@ -380,16 +380,20 @@ que están tus archivos nuevos.
 
 ### 1. El "solo lectura" fue una decisión, no una carencia
 
-El MCP local **no puede** tocar tu modelo. Eso permitió que todos experimentaran
-sin miedo durante dos horas. Cuando evalúes herramientas para tu trabajo diario,
-hazte la misma pregunta: **¿cuál es el peor caso si alguien aprueba sin leer?**
+Ninguno de los dos servidores que usaste **puede** tocar tus modelos. El local
+porque no tiene esas funciones; Fabric IQ porque Microsoft separó el consumo de
+la administración en servidores distintos, y elegimos el de consumo.
+
+Eso permitió que todos experimentaran sin miedo durante dos horas. Cuando
+evalúes herramientas para tu trabajo diario, hazte la misma pregunta:
+**¿qué es incapaz de hacer esta herramienta, aunque alguien apruebe sin leer?**
 
 ### 2. La división de responsabilidades es la que hace esto seguro
 
 | Quién | Qué hace | Qué NO hace |
 |---|---|---|
-| **MCP local** | Lee el modelo | Escribir en el modelo. Escribir archivos. |
-| **MCP remoto** | Consulta el Service (endpoint de *Consumption*) | Escribir: ese es el endpoint de *Authoring*, que dejamos fuera a propósito. |
+| **MCP local** | Lee el modelo de Power BI Desktop | Escribir en el modelo. Escribir archivos. |
+| **Fabric IQ** | Descubre contenido y consulta Fabric | Crear, modificar o administrar nada. Y no puede saltarse tu RLS. |
 | **Claude Code** | Escribe archivos y usa Git | Tocar tus modelos de Power BI. |
 | **Tú** | Aprobar, validar y decidir | Delegar el criterio. |
 

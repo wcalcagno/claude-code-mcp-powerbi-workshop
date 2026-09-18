@@ -1,22 +1,22 @@
-# Ejercicio 2 · Consultar un modelo del Power BI Service / Fabric
+# Ejercicio 2 · Explorar y consultar contenido en Fabric
 
 ⏱️ **Tiempo estimado:** 18 minutos
-📍 **Bloque:** [03 · MCP Fabric / API](../README.md)
+📍 **Bloque:** [03 · Fabric IQ](../README.md)
 
 ---
 
 ## Objetivo
 
-Obtener el **ID de un semantic model** publicado en tu workspace, leer su
-**esquema** y ejecutar una **consulta DAX contra el Service** — no contra tu
-Power BI Desktop.
+Encontrar un reporte o semantic model **por su nombre**, leer su estructura y
+ejecutar una **consulta DAX contra Fabric** — no contra tu Power BI Desktop.
 
 ---
 
 ## Antes de empezar
 
-- [ ] `/mcp` muestra `powerbi-fabric` como `connected`.
-- [ ] Tienes permiso **Build** sobre al menos un semantic model.
+- [ ] `/mcp` muestra `fabric-iq` como `connected` con 6 herramientas.
+- [ ] Sabes el **nombre** de un reporte o semantic model que puedas abrir en
+      <https://app.powerbi.com>.
 - [ ] Estás en la carpeta del workshop.
 
 > 💡 **Ya no necesitas Power BI Desktop abierto para este ejercicio.** Pero déjalo
@@ -24,63 +24,54 @@ Power BI Desktop.
 
 ---
 
-## Paso 1 · Obtener el ID de tu semantic model
+## Paso 1 · Encontrar tu contenido por nombre
 
-Acá hay algo que sorprende a todo el mundo, así que vale la pena decirlo directo:
+Acá está la gran diferencia con trabajar contra la API en crudo: **no necesitas
+ningún ID**. Fabric IQ busca por nombre y resuelve los identificadores internos
+por su cuenta.
 
-> 🔴 **Este servidor no tiene una herramienta para listar tus workspaces ni tus
-> semantic models.** No puedes pedirle "muéstrame mis workspaces". Trabaja sobre
-> **un modelo que tú identificas por su ID**.
-
-No es un olvido de Microsoft: el servidor está pensado para agentes que ya saben
-sobre qué modelo trabajan. El descubrimiento lo haces tú, en el navegador.
-
-### Cómo sacar el ID
-
-1. Abre <https://app.powerbi.com>.
-2. Entra al workspace que te interesa.
-3. Haz clic en el **semantic model** (antes *dataset*) para abrir su página.
-4. Mira la URL del navegador:
-
-   ```
-   https://app.powerbi.com/groups/{workspaceId}/datasets/{semanticModelId}
-   ```
-
-   | Parte | Qué es |
-   |---|---|
-   | `{workspaceId}` | El GUID de tu workspace → `TU_WORKSPACE_ID` |
-   | `{semanticModelId}` | El GUID del modelo → `TU_DATASET_ID` ⬅️ **el que necesitas** |
-
-5. **Copia el `semanticModelId`.** Es un GUID con formato
-   `xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`.
-
-### Guárdalo donde Claude Code pueda verlo
-
-En vez de pegarlo en cada prompt, déjalo en un archivo del repositorio.
-
-#### Prompt sugerido
+### Prompt sugerido
 
 ```
-Crea el archivo 03-mcp-fabric-api/mis-modelos.md con una tabla que tenga
-las columnas: alias corto, nombre del workspace, nombre del semantic model
-y su ID. Agrega esta fila:
+Usando el MCP fabric-iq, busca en Microsoft Fabric el reporte o semantic
+model llamado "Ventas Corporativas".
 
-  alias: ventas-prod
-  workspace: Ventas - Producción
-  modelo: Ventas Corporativas
-  id: PEGA_AQUI_TU_SEMANTIC_MODEL_ID
-
-Agrega arriba una nota explicando que estos IDs no son secretos (identifican,
-no autentican), pero que el acceso real depende de mis permisos en Entra ID.
+Dime qué encontraste: tipo de item (reporte o semantic model), en qué
+workspace está, y cualquier otro dato que devuelva la búsqueda.
 ```
 
-> 📌 Reemplaza los valores por los tuyos. Un ID de semantic model **no es un
-> secreto**: sin permisos sobre el modelo, no sirve de nada. Aun así, si tus
-> nombres de workspace revelan información interna, considera no subir este
-> archivo a un repositorio público.
+> 📌 Reemplaza `"Ventas Corporativas"` por el nombre real de tu contenido.
 
-**Resultado esperado:** el archivo creado. De aquí en adelante puedes decirle a
-Claude *"usa el modelo ventas-prod"* y él busca el ID en el archivo.
+### Resultado esperado
+
+Claude pide permiso para usar `DiscoverArtifacts`. Apruébalo. Devuelve el item
+encontrado con su tipo y su ubicación.
+
+> ⭐ **Esto es identidad delegada funcionando.** Fabric IQ solo devuelve contenido
+> que **tu cuenta ya puede ver**. Si un compañero corre el mismo prompt, puede
+> obtener un resultado distinto — o ninguno. Compáralo con quien tengas al lado:
+> es la forma más rápida de entender el concepto.
+
+### Si no lo encuentra
+
+| Causa | Solución |
+|---|---|
+| El nombre es ambiguo o hay varios parecidos | Usa un nombre más específico y completo. |
+| No tienes acceso | Verifica que puedes abrirlo en el navegador. |
+| Es un tipo no soportado | Fabric IQ soporta **reportes y semantic models**. No dashboards, no reportes paginados (RDL), no apps. |
+
+### Alternativa: pegar la URL
+
+Si la búsqueda por nombre no acierta, pega la URL directamente.
+
+```
+Resuelve este item de Fabric y dime qué es:
+https://app.powerbi.com/groups/xxxxxxxx/reports/yyyyyyyy
+```
+
+> ⚠️ **Usa la URL de la barra de direcciones de tu navegador, no un *share
+> link*.** Los enlaces para compartir no funcionan con Fabric IQ. Claude usará
+> `ResolveFabricItem` para obtener los identificadores internos.
 
 ---
 
@@ -89,10 +80,7 @@ Claude *"usa el modelo ventas-prod"* y él busca el ID en el archivo.
 ### Prompt sugerido
 
 ```
-Usando el MCP powerbi-fabric, obtén el esquema del semantic model cuyo ID
-está en @03-mcp-fabric-api/mis-modelos.md como "ventas-prod".
-
-Muéstrame:
+Obtén el esquema del semantic model que acabas de encontrar. Muéstrame:
 - Las tablas, indicando cuáles parecen de hechos y cuáles de dimensiones
 - Las medidas, con su expresión DAX
 - Las relaciones, con su cardinalidad
@@ -102,15 +90,8 @@ Preséntalo en tablas y no inventes nada que no venga en el esquema.
 
 ### Resultado esperado
 
-Claude pide permiso para usar la herramienta **Get Semantic Model Schema**.
-Apruébalo. Devuelve el esquema del modelo publicado: tablas, columnas, medidas,
-relaciones, tipos de dato y jerarquías.
-
-> 💡 **Si el autor del modelo preparó metadatos para IA** (descripciones,
-> instrucciones, respuestas verificadas), también vienen en el esquema. Es la
-> misma información que usa Copilot en Power BI, y mejora bastante la calidad de
-> las respuestas. Vale la pena mirarlo: si tu modelo no tiene nada de eso, ya
-> sabes qué agregar al volver al trabajo.
+Claude usa `GetSemanticModelSchema` y devuelve la estructura del modelo
+publicado: tablas, columnas, medidas y relaciones.
 
 ---
 
@@ -119,7 +100,7 @@ relaciones, tipos de dato y jerarquías.
 ### Prompt sugerido
 
 ```
-Compara el esquema que acabas de leer del Service con el que exploramos
+Compara el esquema que acabas de leer de Fabric con el que exploramos
 en el modelo local de Power BI Desktop en el bloque 2. ¿Son la misma
 estructura o hay diferencias en tablas, medidas o relaciones?
 Si hay diferencias, lístalas. Si son idénticos, dilo.
@@ -130,29 +111,28 @@ Si hay diferencias, lístalas. Si son idénticos, dilo.
 Una comparación concreta. Posibles hallazgos:
 
 - **Idénticos** → el `.pbix` local es el mismo que está publicado. Lo esperable.
-- **El Service tiene medidas que el local no** → alguien editó el modelo
-  directamente en la nube.
-- **El local tiene medidas que el Service no** → tienes cambios sin publicar.
+- **Fabric tiene medidas que el local no** → alguien editó el modelo en la nube.
+- **El local tiene medidas que Fabric no** → tienes cambios sin publicar.
 
 > 💡 Detectar esto a mano requiere abrir ambos y comparar a ojo. Es uno de los
 > usos más prácticos de todo el taller.
 
 ---
 
-## Paso 4 · Ejecutar una consulta DAX contra el Service
+## Paso 4 · Ejecutar una consulta DAX contra Fabric
 
 Este es el paso central del bloque.
 
 ### Prompt sugerido
 
 ```
-Ejecuta una consulta DAX contra el semantic model ventas-prod en el Service,
-que devuelva el total de ventas sin filtros. Usa la misma lógica que usamos
-en el modelo local del bloque 2.
+Ejecuta una consulta DAX contra ese semantic model en Fabric, que devuelva
+el total de ventas sin filtros. Usa la misma lógica que usamos en el modelo
+local del bloque 2.
 
 Antes de ejecutarla, muéstrame la consulta. Después dime el resultado con
-separador de miles, e indícame explícitamente que este número viene del
-SERVICE, no de Power BI Desktop.
+separador de miles, e indícame explícitamente que este número viene de
+FABRIC, no de Power BI Desktop.
 ```
 
 ### Resultado esperado
@@ -170,17 +150,21 @@ EVALUATE
 **Después**, el resultado, identificado claramente:
 
 ```
-Total Ventas (SERVICE - Ventas Corporativas): 12.435.890
+Total Ventas (FABRIC - Ventas Corporativas): 12.435.890
 ```
 
 > 📌 **La consulta DAX es exactamente la misma** que corriste en el bloque 2. El
 > lenguaje no cambia: cambia dónde se ejecuta. Es el mismo motor de Analysis
 > Services, en tu PC o en la nube de Microsoft.
 
-> 🔐 **Tu RLS se aplica.** Si el modelo tiene Row-Level Security y tu usuario cae
-> en un rol, el resultado viene filtrado — igual que si abrieras el reporte en el
-> navegador. Eso es consecuencia directa de usar **identidad delegada**: con un
-> *service principal*, Power BI **no** aplicaría RLS.
+> 🔐 **Tu RLS y tu OLS se aplican.** Si el modelo tiene Row-Level Security o
+> Object-Level Security y tu usuario cae en un rol, el resultado viene filtrado
+> — igual que si abrieras el reporte en el navegador. Es consecuencia directa de
+> que Fabric IQ **solo** admita identidad delegada.
+
+> ⚠️ **Una consulta, un modelo.** Cada `ExecuteQuery` apunta a un único semantic
+> model: no hace joins entre modelos. Si necesitas combinar dos, Claude puede
+> ejecutar dos consultas separadas y unir los resultados él mismo.
 
 ---
 
@@ -189,105 +173,110 @@ Total Ventas (SERVICE - Ventas Corporativas): 12.435.890
 ### Prompt sugerido
 
 ```
-Ahora ejecuta contra el Service la misma consulta agrupada por año que
-hicimos en el modelo local, con el total de ventas por año ordenado de
-mayor a menor. Guarda el resultado: lo vamos a comparar con el local
-en el bloque siguiente.
+Ahora ejecuta contra Fabric la misma consulta agrupada por año que hicimos
+en el modelo local, con el total de ventas por año ordenado de mayor a
+menor. Guarda el resultado: lo vamos a comparar con el local en el bloque
+siguiente.
 ```
 
 ### Resultado esperado
 
-| Año | Total Ventas (SERVICE) |
+| Año | Total Ventas (FABRIC) |
 |---|---|
 | 2024 | 3.980.115 |
 | 2023 | 5.220.110 |
 | 2022 | 3.113.450 |
 
+> 💡 **Mantén los resultados chicos.** Las consultas grandes vuelven como un CSV
+> embebido y pueden quedar truncadas. Usa agregaciones y filtros en vez de pedir
+> tablas completas — que además es una buena práctica de DAX en general.
+
 ---
 
-## Paso 6 · Leer la estructura de un reporte
+## Paso 6 · Buscar un valor dentro del modelo
 
-Algo que el modelo local no te da de la misma forma: **cómo se usa realmente el
-modelo** en un reporte publicado.
+`ValueSearch` es una herramienta que no tiene equivalente en el bloque 2, y
+resuelve un problema muy concreto y muy cotidiano.
 
-Para esto necesitas el **ID del reporte**, que sacas de su URL:
-
-```
-https://app.powerbi.com/groups/{workspaceId}/reports/{reportId}
-```
+**El problema:** quieres filtrar por una región, un producto o un cliente, pero
+no sabes cómo está escrito exactamente en el modelo. ¿Es `"Metropolitana"`,
+`"Región Metropolitana"`, `"RM"` o `"XIII"`? Si aciertas mal, tu DAX devuelve
+vacío y parece un error de datos.
 
 ### Prompt sugerido
 
 ```
-Usando la herramienta de metadatos de reportes, léeme la estructura del
-reporte con ID PEGA_AQUI_TU_REPORT_ID. Dime:
+Busca en el semantic model los valores almacenados que se parezcan a
+"Metropolitana". Dime en qué tabla y columna están y cómo están escritos
+exactamente.
+
+Después, usa el valor exacto que encontraste para ejecutar una consulta DAX
+que me dé el total de ventas solo de esa región.
+```
+
+> 📌 Reemplaza `"Metropolitana"` por algún valor que exista en tu modelo: una
+> categoría de producto, un nombre de sucursal, un segmento de cliente.
+
+### Resultado esperado
+
+Primero, la ubicación y la grafía exacta del valor. Después, la consulta filtrada
+y su resultado.
+
+> ⭐ **Este es el paso que más tiempo ahorra en el día a día.** El clásico "mi
+> medida devuelve blanco y no sé por qué" es, muchas veces, un filtro escrito con
+> una tilde de más o una abreviatura distinta.
+
+---
+
+## Paso 7 · Leer la estructura de un reporte
+
+Algo que el modelo local no te da: **cómo se usa realmente el modelo** en un
+reporte publicado.
+
+### Prompt sugerido
+
+```
+Lee los metadatos del reporte "Dashboard Comercial" en Fabric. Dime:
 - Cuántas páginas tiene y cómo se llaman
 - Qué visuales hay en cada página y qué campos usan
 - Qué filtros están aplicados
 
-Después dime qué medidas del modelo NO aparecen usadas en ningún visual.
+Después dime qué medidas del semantic model NO aparecen usadas en ningún
+visual de este reporte.
 ```
 
 ### Resultado esperado
 
-Las páginas, los visuales con sus campos y los filtros. Y, al final, la lista de
-medidas que nadie está usando.
+Las páginas, los visuales con sus campos, los filtros. Y, al final, la lista de
+medidas que ese reporte no usa.
 
-> ⭐ **Esa última pregunta es oro puro para limpiar un modelo.** Medidas que nadie
-> usa son deuda técnica: alguien las creó para un análisis puntual y quedaron ahí.
->
-> ⚠️ Con un matiz honesto: que una medida no aparezca en **este** reporte no
+> ⚠️ **Con un matiz honesto:** que una medida no aparezca en **este** reporte no
 > significa que nadie la use. Puede estar en otro reporte, en un Excel conectado
-> o en una app. Trata el resultado como **una lista de candidatas a revisar**,
-> no como una orden de borrado.
+> o en una app. Trata el resultado como **una lista de candidatas a revisar**, no
+> como una orden de borrado.
 
 ---
 
-## Paso 7 · Consultar sin gastar Copilot
+## Recordatorio: solo lectura, en las tres capas
 
-El servidor incluye **Generate Query**, que genera DAX usando el motor de Copilot
-de Power BI. Funciona bien, pero **requiere licencia de Copilot y consume
-capacidad**.
+Todo lo que hiciste acá **lee**. Y la protección viene de tres lugares
+independientes:
 
-### Prompt sugerido
-
-```
-Para el resto del taller, escribe tú el DAX directamente en vez de usar la
-herramienta Generate Query, así no consumimos capacidad de Copilot.
-Confírmame que entendiste y dime qué diferencia práctica tiene.
-```
-
-### Resultado esperado
-
-Claude confirma que va a escribir el DAX por su cuenta y usar solo **Execute
-Query** para ejecutarlo. La diferencia práctica: ninguna para el taller — es
-exactamente lo que hizo en el bloque 2.
-
----
-
-## Recordatorio: modo consulta
-
-Todo lo que hicimos acá **lee**. Ninguna de las cuatro herramientas del servidor
-de Consumption modifica nada.
-
-Tres capas de protección, de la más fuerte a la más débil:
-
-1. **El servidor elegido.** Usamos el endpoint de *Consumption*. El de *Authoring*
-   —que sí escribe— quedó fuera del taller a propósito.
-2. **Los permisos que pedimos.** La app de Entra ID solo tiene `Dataset.Read.All`
-   y `Workspace.Read.All`. Nunca pedimos `SemanticModel.ReadWrite.All`.
-3. **Tus permisos en Power BI.** No puedes hacer nada que tu cuenta no pudiera
-   hacer ya desde el navegador, y tu RLS se respeta.
+| Capa | Qué garantiza |
+|---|---|
+| **El servidor** | Fabric IQ expone seis herramientas de consumo. Ninguna crea, modifica ni administra. Microsoft separó eso en otros servidores MCP. |
+| **Los permisos** | `Item.Read.All`, `Item.Execute.All`, `Dataset.Read.All`. Ningún permiso de escritura, porque el servidor no lo necesita. |
+| **Tu identidad** | Solo ves lo que ya podías ver. RLS y OLS se aplican. No existe autenticación de service principal que pudiera saltárselos. |
 
 ---
 
 ## ✅ Checklist
 
-- [ ] Obtuviste el ID de un semantic model desde la URL del Service.
-- [ ] Lo guardaste en `mis-modelos.md`.
-- [ ] Leíste el esquema del modelo publicado.
+- [ ] Encontraste contenido en Fabric **por su nombre**, sin usar ningún ID.
+- [ ] Leíste el esquema del semantic model publicado.
 - [ ] Lo comparaste con el modelo local del bloque 2.
-- [ ] Ejecutaste al menos una consulta DAX contra el Service.
+- [ ] Ejecutaste al menos una consulta DAX contra Fabric.
+- [ ] Usaste `ValueSearch` para encontrar la grafía exacta de un valor.
 - [ ] Tienes a mano el resultado agrupado por año, para el bloque 4.
 
 ---

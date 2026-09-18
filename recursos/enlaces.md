@@ -73,43 +73,52 @@ Todo lo que se mencionó en el workshop, en un solo lugar.
 
 ---
 
-## MCP oficial de Microsoft para Power BI / Fabric (bloque 03)
+## Fabric IQ — el MCP oficial de Microsoft (bloque 03)
 
-### Los endpoints
+### El endpoint
 
-| Servidor | Endpoint | Escribe |
-|---|---|---|
-| **Power BI Consumption MCP** ⬅️ el del taller | `https://api.fabric.microsoft.com/v1/mcp/powerbi` | ❌ No |
-| Power BI Authoring MCP (hospedado) | `https://api.fabric.microsoft.com/v1/mcp/powerbi/authoring` | ✅ Sí |
-| Fabric IQ MCP | `https://fabriciq.svc.cloud.microsoft/v1/mcp/FabricIQ` | ❌ No |
+| Situación | Endpoint |
+|---|---|
+| **Normal** | `https://fabriciq.svc.cloud.microsoft/v1/mcp/fabriciq` |
+| Con **private links** | `https://api.fabric.microsoft.com/v1/mcp/fabriciq` |
 
-> ⚠️ **El endpoint de Consumption está en preview.** Las definiciones de las
-> herramientas, los formatos de solicitud y los esquemas de respuesta pueden
-> cambiar. **Verifica la documentación antes de configurarlo.**
->
-> 📌 Microsoft señala hoy **Fabric IQ** como el camino preferente para escenarios
-> de consumo, y describe el endpoint de Consumption como el endpoint de consulta
-> *anterior*, que sigue documentado. El taller usa Consumption por simplicidad y
-> por alcance; para algo que vaya a durar, evalúa Fabric IQ.
+Header para fijar la versión del contrato de herramientas:
+
+```http
+X-Variants: Fabric.Routing.FabricIQ.V1
+```
+
+> ✅ **Fabric IQ está disponible de forma general (GA)**, no en preview.
+> Microsoft lo define como un conjunto de herramientas de **solo lectura** para
+> escenarios de consumo. Soporta reportes y semantic models; **no** soporta
+> dashboards, reportes paginados (RDL), apps, ontologías ni data agents.
 
 ### Documentación
 
 | Recurso | Enlace | Para qué |
 |---|---|---|
-| **Documentación MCP de Power BI** | <https://learn.microsoft.com/es-es/power-bi/developer/mcp/> | Punto de entrada de todo el bloque 3 |
-| **Comparativa de los servidores MCP** | <https://learn.microsoft.com/es-es/power-bi/developer/mcp/mcp-servers-overview> | Cuál usar según lo que necesites. Explica Authoring vs. consumo. |
-| **Consumption MCP server · Get started** | <https://learn.microsoft.com/es-es/power-bi/developer/mcp/remote-mcp-server-get-started> | Endpoint, prerrequisitos, tenant setting y las 4 herramientas |
-| **Herramientas del Consumption server** | <https://learn.microsoft.com/es-es/power-bi/developer/mcp/remote-mcp-server-tools> | Detalle de Execute Query, Get Schema, Get Report Metadata, Generate Query |
-| **Registrar el server en clientes externos** | <https://learn.microsoft.com/es-es/power-bi/developer/mcp/remote-mcp-server-external-clients> | El registro de app en Entra ID, redirect URI y permisos delegados |
-| **Power BI Authoring MCP server** | <https://learn.microsoft.com/es-es/power-bi/developer/mcp/power-bi-authoring-mcp> | El que **sí escribe**, local y hospedado. Para tu trabajo diario, no para el taller. |
-| **Fabric IQ MCP** | <https://learn.microsoft.com/es-es/fabric/iq/connectors/fabric-iq-mcp> | El camino preferente de Microsoft para consumo |
-| Preparar modelos para IA | <https://learn.microsoft.com/es-es/power-bi/create-reports/copilot-prepare-data-ai> | Mejora mucho la calidad de las respuestas sobre tu modelo |
-| Permisos Build sobre semantic models | <https://learn.microsoft.com/es-es/power-bi/connect-data/service-datasets-build-permissions> | El permiso que necesitas para consultar (el rol *Viewer* no siempre basta) |
-| REST API de Power BI | <https://learn.microsoft.com/es-es/rest/api/power-bi/> | Lo que hay debajo del MCP remoto |
-| Ejecutar consultas DAX vía API | <https://learn.microsoft.com/es-es/rest/api/power-bi/datasets/execute-queries> | El endpoint detrás de la herramienta *Execute Query* |
-| Row-Level Security en Fabric | <https://learn.microsoft.com/es-es/fabric/security/service-admin-row-level-security> | Por qué la identidad delegada respeta RLS y el service principal no |
+| **Fabric IQ MCP · Get started** | <https://learn.microsoft.com/es-es/fabric/iq/connectors/fabric-iq-mcp> | **La página central del bloque 3.** Endpoint, permisos, las 6 herramientas y limitaciones. |
+| **Comparativa de los servidores MCP** | <https://learn.microsoft.com/es-es/power-bi/developer/mcp/mcp-servers-overview> | Cuál usar según lo que necesites. Explica consumo vs. authoring. |
+| Skills for Fabric | <https://learn.microsoft.com/es-es/fabric/fundamentals/skills-for-fabric-overview> | La skill de Fabric IQ, pensada para GitHub Copilot CLI. En Claude Code ese rol lo cumple `CLAUDE.md`. |
+| Row-Level Security en Fabric | <https://learn.microsoft.com/es-es/fabric/security/service-admin-row-level-security> | Por qué Fabric IQ, al ser solo delegado, respeta tu RLS |
 | Asegurar servidores MCP | <https://learn.microsoft.com/es-es/azure/api-management/secure-mcp-servers> | Guía de seguridad de Microsoft para MCP |
-| Blog de Microsoft Fabric | <https://blog.fabric.microsoft.com/> | Anuncios de nuevas capacidades y previews |
+| Preparar modelos para IA | <https://learn.microsoft.com/es-es/power-bi/create-reports/copilot-prepare-data-ai> | Mejora mucho la calidad de las respuestas sobre tu modelo |
+| Blog de Microsoft Fabric | <https://blog.fabric.microsoft.com/> | Anuncios de nuevas capacidades |
+
+### Los otros servidores MCP de Microsoft — los que el taller NO usa
+
+| Servidor | Endpoint | Escribe |
+|---|---|---|
+| Power BI **Authoring** MCP | `https://api.fabric.microsoft.com/v1/mcp/powerbi/authoring` | ✅ **Sí** |
+| Power BI **Consumption** MCP (endpoint de consulta anterior, en preview) | `https://api.fabric.microsoft.com/v1/mcp/powerbi` | ❌ No |
+
+| Recurso | Enlace | Para qué |
+|---|---|---|
+| **Power BI Authoring MCP server** | <https://learn.microsoft.com/es-es/power-bi/developer/mcp/power-bi-authoring-mcp> | El que **sí escribe**, local y hospedado. Para tu trabajo diario, no para el taller. |
+| Power BI Consumption MCP | <https://learn.microsoft.com/es-es/power-bi/developer/mcp/remote-mcp-server-get-started> | El endpoint de consulta anterior. Requiere permiso *Build* y un tenant setting de preview. |
+| Documentación MCP de Power BI | <https://learn.microsoft.com/es-es/power-bi/developer/mcp/> | Índice general |
+| REST API de Power BI | <https://learn.microsoft.com/es-es/rest/api/power-bi/> | Lo que hay debajo de todo esto |
+| Ejecutar consultas DAX vía API | <https://learn.microsoft.com/es-es/rest/api/power-bi/datasets/execute-queries> | El endpoint detrás de *ExecuteQuery* |
 
 ---
 
