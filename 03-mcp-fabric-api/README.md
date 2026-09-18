@@ -12,167 +12,245 @@ En el bloque 2 conectamos Claude Code a **tu computador**. Ahora lo conectamos a
 
 | | **Bloque 2 · MCP local** | **Bloque 3 · MCP remoto (este)** |
 |---|---|---|
-| Qué consulta | El modelo abierto en **Power BI Desktop** | Los workspaces del **Power BI Service / Fabric** |
+| Qué consulta | El modelo abierto en **Power BI Desktop** | Los semantic models publicados en el **Service / Fabric** |
 | Dónde corre el servidor | En tu PC (proceso Python) | En la infraestructura de **Microsoft** |
 | Cómo se conecta | Puerto local XMLA / ADOMD.NET | **API REST** sobre HTTPS |
 | Credenciales | Ninguna (es local) | **Entra ID** (tu cuenta corporativa) |
-| Qué alcanza | Un solo `.pbix`, el que tengas abierto | Todos los workspaces a los que **tú** tengas acceso |
+| Qué alcanza | Un solo `.pbix`, el que tengas abierto | Los semantic models a los que **tú** tengas acceso |
 | Requiere Power BI Desktop abierto | **Sí, obligatorio** | No |
 | Modo de trabajo | **Solo lectura** | **Consulta** (no escritura) |
 | Madurez | Proyecto comunitario | **Oficial de Microsoft, en preview** |
 
 **Lo que se mantiene:** en ambos casos trabajamos **leyendo, no escribiendo**.
-En el bloque 2 porque el servidor literalmente no sabe escribir. En este bloque
-porque nos limitamos a operaciones de consulta, y porque tus permisos en Entra ID
-son el límite real de lo que puedes hacer.
 
 ---
 
-## El servidor: Microsoft Remote MCP Server para Power BI / Fabric
+## El endpoint oficial
 
-Microsoft publica un **servidor MCP remoto oficial** para Power BI y Microsoft
-Fabric. No lo instalas: ya está corriendo en la nube de Microsoft. Tú solo
-registras su dirección en Claude Code y te autenticas.
+Microsoft publica **dos servidores MCP hospedados** para Power BI. La diferencia
+entre ellos es exactamente el punto pedagógico de este taller:
 
-> ⚠️ **Está en PREVIEW.** Eso significa, concretamente:
-> - El endpoint, el nombre de las herramientas y los permisos **pueden cambiar
->   sin aviso**.
-> - Puede no estar habilitado en el tenant de tu empresa.
-> - **No lo uses para procesos productivos** todavía.
-> - **Verifica siempre la URL y los requisitos actuales en la documentación
->   oficial** antes de configurarlo: ver [recursos/enlaces.md](../recursos/enlaces.md).
->
-> Por eso el archivo de configuración de este bloque usa un **placeholder** para
-> el endpoint: el valor correcto es el que esté publicado en la documentación de
-> Microsoft **el día que hagas el taller**, no el que aparezca escrito acá.
+| Servidor | Endpoint | Qué hace |
+|---|---|---|
+| **Power BI Consumption MCP server** ⬅️ **el que usamos** | `https://api.fabric.microsoft.com/v1/mcp/powerbi` | **Consulta.** Lee el esquema de un semantic model y ejecuta DAX. |
+| Power BI Authoring MCP server — **NO lo usamos** | `https://api.fabric.microsoft.com/v1/mcp/powerbi/authoring` | **Lectura y escritura.** Crea, modifica y elimina tablas, columnas, medidas, relaciones y roles de seguridad. |
+
+Existe además **Fabric IQ**, que Microsoft señala hoy como el camino preferente
+para escenarios de consumo:
+
+| Servidor | Endpoint |
+|---|---|
+| Fabric IQ MCP | `https://fabriciq.svc.cloud.microsoft/v1/mcp/FabricIQ` |
+
+### Por qué el taller usa el endpoint de Consumption
+
+La misma lógica del bloque 2, ahora aplicada a la nube: **elegimos deliberadamente
+el servidor que no puede escribir.**
+
+El servidor de *Authoring* existe, es oficial y es una herramienta legítima para
+tu trabajo diario — con control de versiones, revisión de pares y un entorno de
+desarrollo detrás. Pero pide el permiso `SemanticModel.ReadWrite.All`, y eso
+significa que **una aprobación apurada en un salón de clases podría modificar un
+modelo productivo**. No es el riesgo que queremos correr hoy.
+
+> 📌 **Nota sobre el estado del producto.** Microsoft indica que, para consumo de
+> semantic models, hoy conviene usar **Fabric IQ**, y describe el endpoint de
+> Consumption como el endpoint de consulta *anterior*, que sigue documentado y en
+> **preview**. Para este taller usamos Consumption porque su alcance —consultar un
+> modelo y ejecutar DAX— es exactamente el del ejercicio, y su configuración es
+> más simple. Si después del taller vas a montar algo que dure, **evalúa Fabric IQ**.
+> Ver [recursos/enlaces.md](../recursos/enlaces.md).
+
+> ⚠️ **Está en PREVIEW.** Las definiciones de las herramientas, los formatos de
+> solicitud y los esquemas de respuesta **pueden cambiar**. No lo uses en procesos
+> productivos todavía, y verifica la documentación oficial el día que hagas el taller.
 
 ---
 
-## Autenticación: Entra ID con device code
+## Qué sabe hacer el servidor de Consumption
+
+Son **cuatro herramientas**, todas de consulta:
+
+| Herramienta | Qué hace | Qué necesita |
+|---|---|---|
+| **Get Semantic Model Schema** | Devuelve tablas, columnas, medidas, relaciones, tipos de dato y jerarquías del modelo. | ID del semantic model |
+| **Execute Query** | Ejecuta una consulta DAX contra el modelo y devuelve el resultado. | ID del semantic model + expresión DAX |
+| **Get Report Metadata** | Devuelve la estructura de un reporte: páginas, visuales, campos usados y filtros. | ID del reporte |
+| **Generate Query** | Genera DAX a partir de una pregunta en lenguaje natural, usando el motor de Copilot. | ID del modelo + la pregunta. **Requiere licencia de Copilot.** |
+
+> 🔴 **Importante, y es distinto de lo que uno esperaría:** **no hay una
+> herramienta para listar tus workspaces ni tus semantic models.** El servidor
+> trabaja sobre **un modelo que tú identificas por su ID**. Ese ID lo sacas de la
+> URL de Power BI Service — te mostramos cómo en el
+> [ejercicio 2](./ejercicios/02-consultar-workspace-fabric.md).
+
+> 💡 **Sobre Generate Query:** consume capacidad de Copilot. Si tu organización no
+> tiene licencia, o prefieres no gastarla, simplemente no la uses: Claude Code
+> escribe el DAX perfectamente bien por su cuenta, tal como lo hizo en el bloque 2.
+
+---
+
+## Autenticación: Entra ID, identidad delegada
 
 **Entra ID** (antes Azure Active Directory) es el sistema de identidad de
-Microsoft. Es la misma cuenta con la que entras a Power BI Service, Teams y
-Outlook en tu empresa.
+Microsoft: la misma cuenta con la que entras a Power BI Service, Teams y Outlook.
 
-### Autenticación delegada, no service principal
+### Delegada, no service principal
 
-Vamos a usar autenticación **delegada**: Claude Code actúa **en tu nombre**,
-usando **tu identidad y tus permisos**.
+Claude Code actúa **en tu nombre**, con **tu identidad y tus permisos**.
 
 | | **Delegada (la que usamos)** | **Service principal (la que NO usamos)** |
 |---|---|---|
 | Quién es | Tú, la persona | Una aplicación, sin persona detrás |
 | Permisos | Exactamente los tuyos | Los que un administrador le otorgue |
 | Quién queda en la auditoría | Tu nombre | El nombre de la app |
-| Requiere permisos de admin | No | **Sí** |
+| **Row-Level Security (RLS)** | **Se aplica** | **No se aplica** ⚠️ |
+| Requiere permisos de admin | Para el registro de la app, sí | Sí |
 
-**Por qué elegimos delegada para el taller:**
-
-1. **Cada asistente ve solo lo suyo.** Nadie accede a workspaces que no le
-   corresponden. Los permisos que ya tienes en Power BI Service son exactamente
-   los que vas a tener acá, ni uno más.
-2. **No necesitamos molestar al área de TI** para registrar aplicaciones ni
-   otorgar permisos de tenant antes del taller.
-3. **La trazabilidad es correcta.** Si alguien revisa los logs de auditoría de
-   Power BI, verá tu nombre en las consultas — que es la verdad.
-
-### ¿Qué es el "device code flow"?
-
-Es un método de inicio de sesión pensado para programas que **no pueden abrir
-una ventana de navegador con un formulario propio** — como una herramienta de
-terminal.
-
-Funciona así:
-
-1. La herramienta te muestra un **código corto** (ej. `A1B2-C3D4`) y una URL.
-2. Tú abres esa URL **en tu navegador**, donde ya estás logueado con tu cuenta
-   corporativa.
-3. Pegas el código y confirmas.
-4. La herramienta detecta que autorizaste y continúa.
-
-> 🔐 **La ventaja de seguridad es importante:** tu contraseña **nunca pasa por la
-> terminal ni por Claude Code**. La escribes — si acaso — solo en la página
-> oficial de Microsoft, en tu navegador, con el candado de HTTPS a la vista.
-> Claude Code recibe un token temporal, nunca tu credencial.
-
-El paso a paso detallado está en el
-[Ejercicio 1 · Autenticación Entra ID](./ejercicios/01-autenticacion-entra-id.md).
+> 🔐 **Ese punto de RLS es crítico y está documentado por Microsoft:** cuando se
+> usa un *service principal*, **Power BI no aplica RLS**, y la consulta puede ver
+> todos los datos. Con identidad delegada, tu RLS se respeta igual que en el
+> navegador. Es otra razón de peso para que en un taller cada persona use su
+> propia identidad.
 
 ---
 
 ## Prerrequisitos de este bloque
 
-| Requisito | Detalle |
+Este bloque tiene **más fricción que el resto**, y conviene saberlo de antemano:
+dos de los requisitos dependen de tu área de TI, no de ti.
+
+| Requisito | Quién lo resuelve |
 |---|---|
-| **Cuenta de Entra ID** | La cuenta corporativa con la que entras a Power BI Service. |
-| **Acceso a un workspace** | De Power BI Service o Fabric, con rol **Viewer** como mínimo. Con **Member** o **Contributor** aprovechas más el ejercicio. |
-| **Licencia de Power BI** | Pro, PPU, o un workspace en capacidad Fabric / Premium. |
-| **Preview habilitado en tu tenant** | Puede requerir que un administrador lo habilite. Verifícalo antes del taller. |
-| **Navegador con sesión iniciada** | Para completar el device code sin volver a escribir credenciales. |
+| **Tenant setting habilitado:** *"Users can use the Power BI Model Context Protocol server endpoint (preview)"* | 🔴 **Tu administrador de Power BI.** Sin esto, el endpoint no responde. |
+| **Registro de aplicación en Entra ID** con los permisos delegados | 🟡 Tú, si puedes registrar apps; si no, tu administrador de Entra ID. |
+| **Permiso *Build*** sobre al menos un semantic model | 🟡 El dueño del workspace. Ojo: el rol *Viewer* **no siempre basta**. |
+| Licencia de Power BI (Pro, PPU o capacidad Fabric/Premium) | 🟢 Ya la tienes si usas Power BI Service. |
+| Navegador con sesión iniciada en tu cuenta corporativa | 🟢 Tú. |
+
+> 🔴 **Gestiona esto ANTES del taller.** Habilitar el tenant setting y registrar
+> la app puede tomar días en una empresa grande. Si llegas al bloque 3 sin esto
+> resuelto, no vas a poder completar los ejercicios en vivo — pero puedes leerlos,
+> entender el flujo, y ejecutarlos después.
 
 ### Verifica tu acceso antes de empezar
 
-1. Abre <https://app.powerbi.com> en tu navegador.
-2. Confirma que ves al menos un **workspace** además de "Mi área de trabajo".
-3. Entra a ese workspace y confirma que hay al menos un **semantic model**
-   (antes llamado *dataset*).
-4. **Anota el nombre del workspace.** Lo vas a usar en los ejercicios.
+1. Abre <https://app.powerbi.com>.
+2. Entra a un workspace y abre un **semantic model** (antes llamado *dataset*).
+3. Mira la URL. Debería verse así:
 
-> 💡 **¿Sin workspace propio?** "Mi área de trabajo" (*My workspace*) también
-> sirve: publica ahí el `.pbix` que usaste en el bloque 2 y tendrás un modelo
-> para consultar. Eso además hace que el
-> [ejercicio integrador del bloque 4](../04-flujo-completo/README.md) compare el
-> mismo modelo en local y en la nube, que es el escenario ideal.
+   ```
+   https://app.powerbi.com/groups/{workspaceId}/datasets/{semanticModelId}
+   ```
+
+4. **Copia ese `semanticModelId`** a un bloc de notas. Es el dato que vas a usar
+   en todos los ejercicios de este bloque.
+
+> 💡 **¿Sin workspace propio?** Publica en "Mi área de trabajo" el `.pbix` que
+> usaste en el bloque 2. Así el
+> [ejercicio integrador del bloque 4](../04-flujo-completo/README.md) compara
+> **el mismo modelo** en local y en la nube, que es el escenario ideal.
 
 ---
 
 ## Configuración
 
-### Paso 1 · Obtener los datos que necesitas
+### Paso 1 · Registrar una aplicación en Entra ID
 
-| Dato | Dónde sacarlo |
-|---|---|
-| **Endpoint del MCP remoto** | De la documentación oficial de Microsoft (está en preview, cópialo de ahí). Ver [recursos/enlaces.md](../recursos/enlaces.md). |
-| **`TU_TENANT_ID`** | Power BI Service → ícono de ayuda `?` → **Acerca de Power BI**. Aparece como *Tenant ID* o *Tenant URL*. También en <https://portal.azure.com> → Microsoft Entra ID → *Overview* → *Tenant ID*. |
-| **`TU_CLIENT_ID`** | El de la aplicación cliente que uses para autenticarte. Si Microsoft documenta un client ID público para el preview, usa ese. Si tu empresa registró una app propia, pídeselo a TI. |
+Claude Code necesita un **client ID** propio. La razón técnica: Entra ID no
+soporta *dynamic client registration*, así que un cliente MCP externo no puede
+auto-registrarse — hay que darle un ID de aplicación creado a mano.
 
-> 📌 Un **tenant ID** y un **client ID** son identificadores con formato GUID:
-> `xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`. **No son secretos** — identifican, no
-> autentican. Lo que sí es secreto es el **token** que recibes después de
-> autenticarte, y ese nunca se escribe en un archivo de configuración.
+1. Entra a <https://entra.microsoft.com> con una cuenta que pueda registrar apps.
+2. **App registrations** → **New registration**.
+3. Completa:
 
-### Paso 2 · Registrar el servidor en Claude Code
+   | Campo | Valor |
+   |---|---|
+   | **Name** | `Power BI MCP - Claude Code` |
+   | **Supported account types** | *Accounts in this organizational directory only (Single tenant)* |
+   | **Redirect URI** | Déjalo vacío por ahora |
 
-#### Opción A · Con `claude mcp add`
+4. **Register**.
+5. En **Overview**, copia el **Application (client) ID**. Es tu `TU_CLIENT_ID`.
+   Copia también el **Directory (tenant) ID** — es tu `TU_TENANT_ID`.
+
+### Paso 2 · Configurar el redirect URI
+
+Claude Code completa el login abriendo un servidor local temporal y esperando la
+respuesta de Microsoft ahí. Por eso el redirect URI apunta a `localhost`.
+
+1. En tu app → **Authentication** → **Add a platform** → **Mobile and desktop
+   applications**.
+2. Agrega este redirect URI:
+
+   ```
+   http://localhost:8080/callback
+   ```
+
+3. **Configure** para guardar.
+
+> 📌 **El puerto tiene que coincidir.** Usamos `8080` porque en el paso 4 vamos a
+> fijarlo con `--callback-port 8080`. Si no lo fijas, Claude Code usa un puerto al
+> azar y el login falla, porque el redirect URI registrado no coincidiría.
+> **Cualquier diferencia entre ambos hace fallar el sign-in.**
+
+### Paso 3 · Agregar los permisos delegados de Power BI
+
+1. En tu app → **API permissions** → **Add a permission**.
+2. **Microsoft APIs** → **Power BI Service**.
+3. **Delegated permissions**, y agrega:
+
+   | Permiso | Para qué | ¿Necesario acá? |
+   |---|---|---|
+   | `Dataset.Read.All` | Leer los semantic models a los que tienes acceso | ✅ Sí |
+   | `Workspace.Read.All` | Leer los workspaces a los que tienes acceso | ✅ Sí |
+   | `MLModel.Execute.All` | Ejecutar modelos de ML | ⬜ Opcional |
+   | `SemanticModel.ReadWrite.All` | **Leer y escribir** semantic models | ❌ **NO lo agregues** |
+
+   > ⭐ **Esa última fila es el taller en una línea.** Ese permiso es el que pide
+   > el servidor de *Authoring*. No lo agregamos: si la aplicación nunca recibe
+   > el permiso de escritura, no hay aprobación apurada que pueda modificar nada.
+   > **El principio de menor privilegio, aplicado de verdad.**
+
+4. **Add permissions**.
+5. Si tu tenant lo exige, un administrador debe presionar **Grant admin consent**.
+   Si no, se te pedirá consentimiento la primera vez que inicies sesión.
+
+### Paso 4 · Registrar el servidor en Claude Code
 
 Desde PowerShell, en la carpeta del workshop:
 
 ```powershell
-claude mcp add --transport http powerbi-fabric ENDPOINT_OFICIAL_MICROSOFT_MCP
+claude mcp add --transport http --client-id TU_CLIENT_ID --callback-port 8080 powerbi-fabric https://api.fabric.microsoft.com/v1/mcp/powerbi
 ```
-
-Reemplaza `ENDPOINT_OFICIAL_MICROSOFT_MCP` por la URL que obtuviste de la
-documentación.
 
 | Parte | Significado |
 |---|---|
-| `--transport http` | El servidor es remoto y se habla por HTTP, no por proceso local. |
+| `--transport http` | El servidor es remoto y se habla por HTTPS, no es un proceso local. |
+| `--client-id TU_CLIENT_ID` | El *Application (client) ID* del paso 1. |
+| `--callback-port 8080` | Fija el puerto de retorno del login. **Debe coincidir con el redirect URI registrado.** |
 | `powerbi-fabric` | El nombre que verás al escribir `/mcp`. |
-| `ENDPOINT_...` | La dirección del servidor de Microsoft. |
+| `https://api.fabric.microsoft.com/v1/mcp/powerbi` | El endpoint oficial de Consumption. |
 
-#### Opción B · Editando el archivo de configuración
+> 📌 **Sin `--client-secret`.** Es una aplicación de cliente público (una app de
+> escritorio): no maneja secretos. La seguridad la da el redirect URI registrado
+> más PKCE, no un secreto compartido.
 
-Usa el ejemplo de este repositorio:
+**Alternativa:** editar el archivo de configuración a mano, usando el ejemplo de
+este repositorio → 📄 **[`mcp-config-fabric-ejemplo.json`](./mcp-config-fabric-ejemplo.json)**
 
-📄 **[`mcp-config-fabric-ejemplo.json`](./mcp-config-fabric-ejemplo.json)**
-
-### Paso 3 · Reiniciar y autenticarte
+### Paso 5 · Autenticarte
 
 1. Sal de Claude Code (`/exit`) y vuelve a entrar (`claude`).
-2. Escribe `/mcp`.
-3. Verás `powerbi-fabric` en estado **needs authentication** o similar.
-4. Sigue el
+2. Escribe `/mcp`. Verás `powerbi-fabric` como **needs authentication**.
+3. Sigue el
    [Ejercicio 1 · Autenticación Entra ID](./ejercicios/01-autenticacion-entra-id.md).
+
+> 💡 También puedes autenticarte sin abrir una sesión:
+> ```powershell
+> claude mcp login powerbi-fabric
+> ```
 
 ---
 
@@ -180,8 +258,8 @@ Usa el ejemplo de este repositorio:
 
 | # | Ejercicio | Qué practicas |
 |---|---|---|
-| 1 | [Autenticación Entra ID](./ejercicios/01-autenticacion-entra-id.md) | El flujo device code, paso a paso |
-| 2 | [Consultar workspace de Fabric](./ejercicios/02-consultar-workspace-fabric.md) | Listar workspaces, datasets y ejecutar DAX en el Service |
+| 1 | [Autenticación Entra ID](./ejercicios/01-autenticacion-entra-id.md) | El flujo de sign-in, paso a paso |
+| 2 | [Consultar un modelo del Service](./ejercicios/02-consultar-workspace-fabric.md) | Esquema del modelo y DAX contra la nube |
 
 ---
 
@@ -189,18 +267,21 @@ Usa el ejemplo de este repositorio:
 
 | Síntoma | Causa probable | Solución |
 |---|---|---|
-| `/mcp` muestra `failed` | Endpoint incorrecto o preview no habilitado en tu tenant. | Verifica la URL en la documentación oficial. Consulta con tu administrador si el preview está habilitado. |
-| `AADSTS50020` | Tu cuenta no pertenece al tenant indicado. | Revisa que `TU_TENANT_ID` sea el de tu organización, no el de otra. |
-| `AADSTS65001` / *consent required* | Falta consentimiento para la aplicación. | Un administrador de Entra ID debe otorgar el consentimiento. |
-| `AADSTS70016` | El device code aún no fue ingresado. | Completa el paso del navegador. |
-| `403 Forbidden` al listar workspaces | Tu cuenta no tiene acceso a ninguno. | Pide acceso, o usa "Mi área de trabajo". |
-| `401 Unauthorized` después de un rato | El token expiró. | Vuelve a autenticarte con `/mcp`. |
-| No aparecen datasets del workspace | Permisos insuficientes sobre los modelos. | Rol **Viewer** no siempre basta para consultar datos; puede requerir permiso *Build* sobre el semantic model. |
-| La consulta DAX al Service falla pero en local funciona | El modelo publicado es distinto o está sin refrescar. | Revisa la última actualización del semantic model en el Service. |
+| `/mcp` muestra `failed` de entrada | El **tenant setting** no está habilitado. | Es la causa #1. Tu admin de Power BI debe habilitar *"Users can use the Power BI Model Context Protocol server endpoint (preview)"*. |
+| El login abre el navegador y falla al volver | El redirect URI no coincide. | Debe ser **exactamente** `http://localhost:8080/callback`, y el `--callback-port` debe ser `8080`. |
+| `AADSTS50011` — *redirect URI mismatch* | Lo mismo de arriba. | Revisa el puerto en ambos lados. |
+| `AADSTS65001` / *consent required* | Falta consentimiento del administrador. | Un admin de Entra ID debe otorgarlo en la app. |
+| `AADSTS50020` | Tu cuenta no pertenece a ese tenant. | Elegiste la cuenta equivocada al iniciar sesión. |
+| `AADSTS50076` | Se requiere MFA. | Completa el segundo factor. |
+| `AADSTS53003` | Política de acceso condicional. | Consulta con TI; a veces basta con estar en la red corporativa. |
+| `403 Forbidden` al consultar el modelo | Te falta permiso **Build** sobre el semantic model. | Rol *Viewer* no siempre alcanza. Pide *Build* al dueño del workspace. |
+| `401 Unauthorized` después de un rato | El token expiró. | `/mcp` y vuelve a autenticarte. Claude Code normalmente lo refresca solo. |
+| Claude "no encuentra" tus workspaces | **No existe** una herramienta para listarlos. | Entrega el **ID del semantic model**, sacado de la URL de Power BI Service. |
+| `Generate Query` falla | Falta licencia de Copilot. | No la uses: pídele el DAX directamente a Claude Code. |
+| La consulta al Service no coincide con la local | El modelo publicado está desactualizado. | Revisa la fecha del último refresco. **Es el tema del [bloque 4](../04-flujo-completo/README.md).** |
 
-> 🤖 Los códigos que empiezan con `AADSTS` son errores de Entra ID. Pégalos
-> completos en Claude Code y pídele que te los traduzca: son bastante crípticos
-> pero están todos documentados.
+> 🤖 Los códigos `AADSTS` son de Entra ID. Pégalos completos en Claude Code:
+> *"¿Qué significa este error y cómo lo resuelvo?"*.
 
 ---
 

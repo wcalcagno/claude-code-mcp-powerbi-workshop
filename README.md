@@ -49,8 +49,23 @@ está pensado para resolverlo, pero llegar con esto listo te da más tiempo prá
 | **Power BI Desktop** | Instalado, y con **un modelo abierto** durante el workshop (cualquier `.pbix` con datos). Es obligatorio: el endpoint local que usa el MCP solo existe mientras Power BI Desktop tiene un reporte abierto. |
 | **Python 3.8 o superior** | Necesario para el servidor MCP local. Verifica con `python --version`. |
 | **Cuenta de GitHub** | Gratuita. Si no tienes, la creamos en el bloque de Setup. |
-| **Acceso a un workspace** | De Power BI Service o Fabric, con al menos permiso de lectura sobre un dataset / semantic model. Para el bloque 3. |
+| **Acceso a un semantic model** | En Power BI Service o Fabric, con permiso **Build** (el rol *Viewer* no siempre basta). Para el bloque 3. |
 | **Cuenta de Claude** | Con acceso a Claude Code (plan Pro / Max, o API). |
+
+### ⚠️ Dos requisitos del bloque 3 que dependen de tu área de TI
+
+El bloque de Fabric usa el endpoint oficial de Microsoft, que está en **preview**
+y exige dos cosas que **no puedes resolver tú solo el día del taller**:
+
+| Requisito | Quién lo habilita |
+|---|---|
+| Tenant setting *"Users can use the Power BI Model Context Protocol server endpoint (preview)"* | Tu **administrador de Power BI** |
+| Un registro de aplicación en **Entra ID** con permisos delegados de lectura | Tú, si puedes registrar apps; si no, tu admin de Entra ID |
+
+> 🔴 **Gestiónalos con varios días de anticipación.** En una empresa grande esto
+> puede tomar tiempo. Si llegas al bloque 3 sin resolverlo, vas a poder leer y
+> entender el flujo, pero no ejecutarlo en vivo. El detalle está en el
+> [README del bloque 3](./03-mcp-fabric-api/README.md#prerrequisitos-de-este-bloque).
 
 ---
 
@@ -61,7 +76,7 @@ está pensado para resolverlo, pero llegar con esto listo te da más tiempo prá
 | **15 min** | [00 · Setup](./00-setup/) | Instalar Git en Windows, configurar GitHub, instalar Claude Code. |
 | **15 min** | [01 · Claude Code básico](./01-claude-code-basico/README.md) | Qué es, en qué se diferencia de Claude.ai, comandos esenciales, primer commit. |
 | **35 min** | [02 · MCP Power BI local](./02-mcp-powerbi-local/README.md) | Servidor MCP **de solo lectura** sobre Power BI Desktop: explorar el modelo, consultar DAX, documentar medidas. |
-| **35 min** | [03 · MCP Fabric / API](./03-mcp-fabric-api/README.md) | MCP remoto oficial de Microsoft (preview), autenticación Entra ID con device code, consultar workspaces y datasets del Service. |
+| **35 min** | [03 · MCP Fabric / API](./03-mcp-fabric-api/README.md) | **Power BI Consumption MCP server** oficial de Microsoft (preview), autenticación Entra ID delegada, consultar el esquema y ejecutar DAX contra el Service. |
 | **20 min** | [04 · Flujo completo](./04-flujo-completo/README.md) | Ejercicio integrador: comparar local vs. Service, documentar y commitear. Cierre y preguntas. |
 
 ---
@@ -79,7 +94,7 @@ está pensado para resolverlo, pero llegar con esto listo te da más tiempo prá
    - [Ejercicio 3 · Documentar medidas](./02-mcp-powerbi-local/ejercicios/03-documentar-medidas.md)
 4. **[03-mcp-fabric-api/](./03-mcp-fabric-api/README.md)**
    - [Ejercicio 1 · Autenticación Entra ID](./03-mcp-fabric-api/ejercicios/01-autenticacion-entra-id.md)
-   - [Ejercicio 2 · Consultar workspace de Fabric](./03-mcp-fabric-api/ejercicios/02-consultar-workspace-fabric.md)
+   - [Ejercicio 2 · Consultar un modelo del Service](./03-mcp-fabric-api/ejercicios/02-consultar-workspace-fabric.md)
 5. **[04-flujo-completo/](./04-flujo-completo/README.md)**
 6. **[recursos/enlaces.md](./recursos/enlaces.md)**
 

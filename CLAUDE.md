@@ -49,8 +49,17 @@ Markdown**, archivos de configuración de ejemplo y ejercicios guiados.
 - Usa siempre placeholders explícitos y en mayúsculas:
   `TU_TENANT_ID`, `TU_CLIENT_ID`, `TU_WORKSPACE_ID`, `TU_DATASET_ID`,
   `C:/RUTA/A/TU/SCRIPT.py`.
-- Si un endpoint oficial está en preview y puede cambiar, dilo explícitamente y
-  enlaza a la documentación en lugar de fijar un valor como si fuera definitivo.
+- **Los endpoints oficiales de Microsoft sí van escritos con su valor real**,
+  porque están publicados en la documentación y no son secretos:
+  - Power BI **Consumption** MCP (el del taller):
+    `https://api.fabric.microsoft.com/v1/mcp/powerbi`
+  - Power BI **Authoring** MCP (el que escribe, **no** se usa en el taller):
+    `https://api.fabric.microsoft.com/v1/mcp/powerbi/authoring`
+  - **Fabric IQ** MCP: `https://fabriciq.svc.cloud.microsoft/v1/mcp/FabricIQ`
+- El endpoint de Consumption está **en preview**: cada vez que lo menciones,
+  acompáñalo de esa advertencia y del enlace a la documentación oficial.
+- Lo que sí son secretos, y nunca se escriben en un archivo: tokens, client
+  secrets y contraseñas.
 
 ---
 

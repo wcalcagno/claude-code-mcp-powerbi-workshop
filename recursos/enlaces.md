@@ -30,7 +30,7 @@ Todo lo que se mencionó en el workshop, en un solo lugar.
 | Instalación | <https://docs.claude.com/en/docs/claude-code/setup> | Instalar en Windows ([bloque 00](../00-setup/03-instalar-claude-code.md)) |
 | Referencia de comandos | <https://docs.claude.com/en/docs/claude-code/cli-reference> | Todos los comandos y flags |
 | Comandos de la sesión (`/help`, `/mcp`, …) | <https://docs.claude.com/en/docs/claude-code/slash-commands> | Los comandos que empiezan con `/` |
-| **Configurar servidores MCP** | <https://docs.claude.com/en/docs/claude-code/mcp> | `claude mcp add`, `.mcp.json`, autenticación ([bloques 02](../02-mcp-powerbi-local/README.md) y [03](../03-mcp-fabric-api/README.md)) |
+| **Configurar servidores MCP** | <https://code.claude.com/docs/en/mcp> | `claude mcp add`, `.mcp.json`, OAuth con `--client-id` y `--callback-port` ([bloques 02](../02-mcp-powerbi-local/README.md) y [03](../03-mcp-fabric-api/README.md)) |
 | Memoria y `CLAUDE.md` | <https://docs.claude.com/en/docs/claude-code/memory> | Cómo funciona el archivo `CLAUDE.md` de este repo |
 | Permisos y seguridad | <https://docs.claude.com/en/docs/claude-code/iam> | El cuadro de aprobación que ves antes de cada acción |
 
@@ -63,21 +63,52 @@ Todo lo que se mencionó en el workshop, en un solo lugar.
 > ejecuta consultas DAX, pero no crea, modifica ni elimina nada. Es una decisión
 > de diseño del taller — ver el [README del bloque 02](../02-mcp-powerbi-local/README.md#-punto-clave-este-servidor-es-de-solo-lectura).
 
----
-
-## MCP remoto de Microsoft para Power BI / Fabric (bloque 03 · preview)
-
-> ⚠️ **En preview.** El endpoint, los nombres de las herramientas y los permisos
-> pueden cambiar. **Consulta siempre la documentación oficial vigente** antes de
-> configurarlo, en lugar de copiar una URL de este material.
+### La alternativa oficial, para cuando necesites escribir
 
 | Recurso | Enlace | Para qué |
 |---|---|---|
-| **Microsoft Fabric — documentación** | <https://learn.microsoft.com/es-es/fabric/> | Punto de entrada. Busca "MCP" para el estado del preview. |
-| **Microsoft Fabric MCP (repositorio oficial)** | <https://github.com/microsoft/mcp> | Servidores MCP oficiales de Microsoft, incluido Fabric |
+| **Power BI Authoring MCP server** | <https://learn.microsoft.com/es-es/power-bi/developer/mcp/power-bi-authoring-mcp> | El MCP **oficial de Microsoft** para Power BI Desktop y archivos PBIP. **Sí crea y modifica** medidas, tablas, relaciones y roles. Tiene versión local (`stdio`) y hospedada. |
+| Archivos Power BI Project (PBIP) | <https://learn.microsoft.com/es-es/power-bi/developer/projects/projects-overview> | Modelos como archivos de texto, versionables en Git. El entorno correcto para usar un MCP de escritura. |
+| TMDL | <https://learn.microsoft.com/es-es/analysis-services/tmdl/tmdl-overview> | El formato de texto de los modelos tabulares |
+
+---
+
+## MCP oficial de Microsoft para Power BI / Fabric (bloque 03)
+
+### Los endpoints
+
+| Servidor | Endpoint | Escribe |
+|---|---|---|
+| **Power BI Consumption MCP** ⬅️ el del taller | `https://api.fabric.microsoft.com/v1/mcp/powerbi` | ❌ No |
+| Power BI Authoring MCP (hospedado) | `https://api.fabric.microsoft.com/v1/mcp/powerbi/authoring` | ✅ Sí |
+| Fabric IQ MCP | `https://fabriciq.svc.cloud.microsoft/v1/mcp/FabricIQ` | ❌ No |
+
+> ⚠️ **El endpoint de Consumption está en preview.** Las definiciones de las
+> herramientas, los formatos de solicitud y los esquemas de respuesta pueden
+> cambiar. **Verifica la documentación antes de configurarlo.**
+>
+> 📌 Microsoft señala hoy **Fabric IQ** como el camino preferente para escenarios
+> de consumo, y describe el endpoint de Consumption como el endpoint de consulta
+> *anterior*, que sigue documentado. El taller usa Consumption por simplicidad y
+> por alcance; para algo que vaya a durar, evalúa Fabric IQ.
+
+### Documentación
+
+| Recurso | Enlace | Para qué |
+|---|---|---|
+| **Documentación MCP de Power BI** | <https://learn.microsoft.com/es-es/power-bi/developer/mcp/> | Punto de entrada de todo el bloque 3 |
+| **Comparativa de los servidores MCP** | <https://learn.microsoft.com/es-es/power-bi/developer/mcp/mcp-servers-overview> | Cuál usar según lo que necesites. Explica Authoring vs. consumo. |
+| **Consumption MCP server · Get started** | <https://learn.microsoft.com/es-es/power-bi/developer/mcp/remote-mcp-server-get-started> | Endpoint, prerrequisitos, tenant setting y las 4 herramientas |
+| **Herramientas del Consumption server** | <https://learn.microsoft.com/es-es/power-bi/developer/mcp/remote-mcp-server-tools> | Detalle de Execute Query, Get Schema, Get Report Metadata, Generate Query |
+| **Registrar el server en clientes externos** | <https://learn.microsoft.com/es-es/power-bi/developer/mcp/remote-mcp-server-external-clients> | El registro de app en Entra ID, redirect URI y permisos delegados |
+| **Power BI Authoring MCP server** | <https://learn.microsoft.com/es-es/power-bi/developer/mcp/power-bi-authoring-mcp> | El que **sí escribe**, local y hospedado. Para tu trabajo diario, no para el taller. |
+| **Fabric IQ MCP** | <https://learn.microsoft.com/es-es/fabric/iq/connectors/fabric-iq-mcp> | El camino preferente de Microsoft para consumo |
+| Preparar modelos para IA | <https://learn.microsoft.com/es-es/power-bi/create-reports/copilot-prepare-data-ai> | Mejora mucho la calidad de las respuestas sobre tu modelo |
+| Permisos Build sobre semantic models | <https://learn.microsoft.com/es-es/power-bi/connect-data/service-datasets-build-permissions> | El permiso que necesitas para consultar (el rol *Viewer* no siempre basta) |
 | REST API de Power BI | <https://learn.microsoft.com/es-es/rest/api/power-bi/> | Lo que hay debajo del MCP remoto |
-| REST API de Fabric | <https://learn.microsoft.com/es-es/rest/api/fabric/articles/> | Equivalente para Fabric |
-| Ejecutar consultas DAX vía API | <https://learn.microsoft.com/es-es/rest/api/power-bi/datasets/execute-queries> | El endpoint detrás del "ejecuta esta consulta DAX en el Service" |
+| Ejecutar consultas DAX vía API | <https://learn.microsoft.com/es-es/rest/api/power-bi/datasets/execute-queries> | El endpoint detrás de la herramienta *Execute Query* |
+| Row-Level Security en Fabric | <https://learn.microsoft.com/es-es/fabric/security/service-admin-row-level-security> | Por qué la identidad delegada respeta RLS y el service principal no |
+| Asegurar servidores MCP | <https://learn.microsoft.com/es-es/azure/api-management/secure-mcp-servers> | Guía de seguridad de Microsoft para MCP |
 | Blog de Microsoft Fabric | <https://blog.fabric.microsoft.com/> | Anuncios de nuevas capacidades y previews |
 
 ---
@@ -86,12 +117,14 @@ Todo lo que se mencionó en el workshop, en un solo lugar.
 
 | Recurso | Enlace | Para qué |
 |---|---|---|
-| **Device code flow** | <https://learn.microsoft.com/es-es/entra/identity-platform/v2-oauth2-device-code> | El flujo que usamos en el [ejercicio 01](../03-mcp-fabric-api/ejercicios/01-autenticacion-entra-id.md) |
-| Página de device login | <https://microsoft.com/devicelogin> | Donde se ingresa el código |
+| **Registrar una aplicación en Entra ID** | <https://learn.microsoft.com/es-es/entra/identity-platform/quickstart-register-app> | El paso 1 de la configuración del bloque 3 |
+| Centro de administración de Entra | <https://entra.microsoft.com> | Donde se registra la app |
+| Authorization code flow con PKCE | <https://learn.microsoft.com/es-es/entra/identity-platform/v2-oauth2-auth-code-flow> | **El flujo que usa Claude Code** (navegador + callback en localhost) |
+| Device code flow | <https://learn.microsoft.com/es-es/entra/identity-platform/v2-oauth2-device-code> | El flujo alternativo, explicado en el anexo del [ejercicio 01](../03-mcp-fabric-api/ejercicios/01-autenticacion-entra-id.md) |
+| Página de device login | <https://microsoft.com/devicelogin> | Donde se ingresa el código, si usas ese flujo |
 | Permisos delegados vs. de aplicación | <https://learn.microsoft.com/es-es/entra/identity-platform/permissions-consent-overview> | Por qué usamos identidad delegada y no service principal |
 | Códigos de error `AADSTS` | <https://learn.microsoft.com/es-es/entra/identity-platform/reference-error-codes> | Traducir los errores de autenticación |
-| Registrar una aplicación en Entra ID | <https://learn.microsoft.com/es-es/entra/identity-platform/quickstart-register-app> | Si tu empresa necesita su propia app cliente |
-| Service principals en Power BI | <https://learn.microsoft.com/es-es/power-bi/enterprise/service-premium-service-principal> | El camino que **no** usamos en el taller, para cuando automatices |
+| Service principals en Power BI | <https://learn.microsoft.com/es-es/power-bi/enterprise/service-premium-service-principal> | El camino que **no** usamos en el taller. ⚠️ Recuerda: con service principal, Power BI **no aplica RLS**. |
 
 ---
 

@@ -122,9 +122,25 @@ Muéstrame también la consulta que usaste.
 
 ```
 Ahora, usando el MCP powerbi-fabric, ejecuta la MISMA consulta DAX contra
-el semantic model publicado en el Service.
+el semantic model ventas-prod publicado en el Service.
 Etiqueta el resultado como "SERVICE".
-Dime también cuándo fue la última actualización de ese modelo.
+```
+
+### Antes de seguir: anota la fecha del último refresco
+
+Este dato **no lo entrega el MCP** — el servidor de Consumption lee el esquema y
+ejecuta DAX, pero no expone el historial de actualizaciones. Lo sacas tú del
+Service, y es la pieza clave del diagnóstico:
+
+1. Abre <https://app.powerbi.com> y entra al workspace.
+2. En la fila del semantic model, mira la columna **Actualizado** (*Refreshed*).
+3. **Anota fecha y hora.**
+
+Luego pásaselo a Claude:
+
+```
+El semantic model del Service se actualizó por última vez el
+DD-MM-AAAA a las HH:MM. Tenlo presente para el diagnóstico.
 ```
 
 ### Resultado esperado
@@ -352,7 +368,7 @@ que están tus archivos nuevos.
       │
       ▼
  Claude Code conectado al Service / Fabric     ← bloque 03
- (API REST + Entra ID, modo consulta)             workspaces, datasets, DAX
+ (Consumption MCP + Entra ID, modo consulta)      esquema, reportes, DAX
       │
       ▼
  Un análisis real, documentado y versionado    ← bloque 04
@@ -373,7 +389,7 @@ hazte la misma pregunta: **¿cuál es el peor caso si alguien aprueba sin leer?*
 | Quién | Qué hace | Qué NO hace |
 |---|---|---|
 | **MCP local** | Lee el modelo | Escribir en el modelo. Escribir archivos. |
-| **MCP remoto** | Consulta el Service | Nada fuera de tus permisos de Entra ID. |
+| **MCP remoto** | Consulta el Service (endpoint de *Consumption*) | Escribir: ese es el endpoint de *Authoring*, que dejamos fuera a propósito. |
 | **Claude Code** | Escribe archivos y usa Git | Tocar tus modelos de Power BI. |
 | **Tú** | Aprobar, validar y decidir | Delegar el criterio. |
 

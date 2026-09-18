@@ -87,10 +87,26 @@ Ese es el trato: **cedemos capacidad de escritura a cambio de poder experimentar
 sin miedo.** Y para lo que hace un analista el 90% del tiempo — entender un
 modelo que heredó, validar un número, documentar medidas — leer es suficiente.
 
-> 💬 **Y si mañana quieres escritura:** existen servidores MCP que sí modifican
-> modelos (por ejemplo, vía TMDL o Tabular Editor). Son herramientas legítimas
-> para tu trabajo diario, con control de versiones y un entorno de desarrollo
-> detrás. No son la herramienta correcta para un salón de clases.
+### Y si mañana quieres escritura: existe, y es oficial
+
+Conviene decirlo con todas sus letras, porque hace la elección más honesta:
+**Microsoft publica su propio MCP para Power BI Desktop, y ese sí escribe.**
+
+Se llama **Power BI Authoring MCP server**, tiene una versión local que corre por
+`stdio` contra Power BI Desktop y contra archivos Power BI Project (PBIP), y puede
+crear, actualizar y eliminar tablas, columnas, medidas, relaciones, grupos de
+cálculo y roles de seguridad — incluso en operaciones masivas sobre cientos de
+objetos.
+
+Es una herramienta excelente **para tu trabajo diario**: con archivos PBIP bajo
+control de versiones, revisión de cambios y un entorno de desarrollo detrás.
+Y es exactamente lo que **no** queremos en un salón de clases, donde nadie tiene
+todavía esas defensas montadas y el modelo abierto puede ser el de producción.
+
+> 💬 **Entonces el taller no elige "la opción limitada": elige la opción
+> apropiada.** Cuando vuelvas al trabajo y quieras que Claude Code refactorice
+> DAX o aplique buenas prácticas de modelado, el servidor de *Authoring* es tu
+> herramienta. Los enlaces están en [recursos/enlaces.md](../recursos/enlaces.md).
 
 ---
 
