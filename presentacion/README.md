@@ -10,16 +10,27 @@ orador en cada una.
 
 ## Ver y presentar
 
-El deck está publicado como artifact de Claude:
+El deck está publicado como **artifact de Claude**, privado. Desde ahí se
+presenta a pantalla completa, se pasan las diapositivas, se leen las notas del
+orador y se descarga en PDF o PowerPoint.
 
-**<https://claude.ai/artifact/3fZe98QVHbrc1TY1mLHB83>**
+**Cómo llegar a él:**
 
-> 🔒 Es **privado**. Solo lo abre su dueño y quien reciba acceso explícito desde
+| Dónde estás | Qué hacer |
+|---|---|
+| Claude Code, en la terminal | Escribe `/artifacts` y elige el deck. `o` lo abre, `c` copia su enlace. |
+| Claude Code, app de escritorio | `Ctrl+]` reabre el artifact más reciente de la sesión. |
+| Navegador | Entra a <https://claude.ai/code/artifacts> y búscalo por su nombre. |
+
+Busca el artifact llamado **"Claude Code + MCP para Power BI y Fabric"**.
+
+> 🔒 Es **privado**: solo lo abre su dueño y quien reciba acceso explícito desde
 > el menú *Share* de la página. Si vas a dictar el taller con otra persona,
 > compártelo antes.
-
-Desde ahí puedes presentarlo a pantalla completa, pasar diapositivas, leer las
-notas del orador y descargarlo en PDF o PowerPoint.
+>
+> 📌 **El enlace no está escrito en este repositorio a propósito**, para que
+> pueda publicarse sin arrastrar un vínculo a contenido privado. Si trabajas en
+> equipo, compártelo por el canal interno que ya usen.
 
 ---
 
@@ -109,8 +120,8 @@ Las lees en la vista de presentación del artifact.
 
 ## Editar el deck
 
-**La forma simple:** ábrelo en el enlace de arriba y edítalo ahí. Los cambios
-que hagas en la página quedan guardados en el artifact, no en estos archivos.
+**La forma simple:** ábrelo como indica *Ver y presentar* y edítalo en la propia
+página. Los cambios quedan guardados en el artifact, no en estos archivos.
 
 **Desde Claude Code:** pídeselo en lenguaje natural, por ejemplo
 
