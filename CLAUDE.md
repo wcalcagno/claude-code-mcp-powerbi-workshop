@@ -104,13 +104,27 @@ haya que disculpar.** La razón:
 00-setup/              Instalación: Git, GitHub, Claude Code
 01-claude-code-basico/ Fundamentos de Claude Code + primer commit
 02-mcp-powerbi-local/  MCP de solo lectura sobre Power BI Desktop
-03-mcp-fabric-api/     MCP remoto de Microsoft sobre Service / Fabric
-04-flujo-completo/     Ejercicio integrador local vs. Service
+03-mcp-fabric-api/     Fabric IQ sobre Power BI Service / Fabric
+04-flujo-completo/     Ejercicio integrador local vs. nube
+presentacion/          El deck que se proyecta (material del relator)
 recursos/              Enlaces de referencia
 ```
 
 Cada carpeta de contenido tiene un `README.md` que la explica, y las carpetas
 `ejercicios/` contienen ejercicios individuales.
+
+### La carpeta `presentacion/`
+
+Es el respaldo versionado del deck del taller, publicado como artifact de Claude.
+`deck.json` es el índice y cada `slides/<id>.html` es una diapositiva: un solo
+`<section>`, estilos en línea y las notas del orador en un `<aside>` final.
+**No son páginas web completas** — no llevan `<html>`, `<head>` ni `<body>`, y no
+se abren en un navegador.
+
+Si editas una diapositiva, respeta el sistema visual descrito en
+[`presentacion/README.md`](presentacion/README.md): tres tipos de lámina, la
+escala tipográfica existente, y **una sola** diapositiva con fondo de acento
+(la del solo lectura).
 
 ---
 

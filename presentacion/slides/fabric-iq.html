@@ -1,0 +1,49 @@
+<section id="fabric-iq" data-transition="fade" style="background:#F4F1EA; color:#141B22; font-family:'Rubik', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; justify-content:space-between; gap:48px">
+
+  <div style="display:flex; flex-direction:column; gap:16px">
+    <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; font-weight:500; letter-spacing:3px; text-transform:uppercase; color:#A84A2B">Bloque 03 · Fabric IQ</p>
+    <h2 style="font-size:72px; font-weight:600; line-height:1.15">Seis herramientas, todas de lectura</h2>
+  </div>
+
+  <div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:28px">
+    <div style="display:flex; flex-direction:column; gap:12px; background:#FDFCF8; border:1px solid #DED9CC; border-radius:18px; padding:32px 34px">
+      <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:28px; font-weight:500; color:#A84A2B">DiscoverArtifacts</p>
+      <p style="font-size:26px; line-height:1.35; color:#5F5849">Busca reportes y modelos por nombre</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:12px; background:#FDFCF8; border:1px solid #DED9CC; border-radius:18px; padding:32px 34px">
+      <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:28px; font-weight:500; color:#A84A2B">ResolveFabricItem</p>
+      <p style="font-size:26px; line-height:1.35; color:#5F5849">Resuelve una URL de Fabric que le pegues</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:12px; background:#FDFCF8; border:1px solid #DED9CC; border-radius:18px; padding:32px 34px">
+      <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:28px; font-weight:500; color:#A84A2B">GetSemanticModelSchema</p>
+      <p style="font-size:26px; line-height:1.35; color:#5F5849">Tablas, medidas y relaciones del modelo</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:12px; background:#FDFCF8; border:1px solid #DED9CC; border-radius:18px; padding:32px 34px">
+      <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:28px; font-weight:500; color:#A84A2B">GetReportMetadata</p>
+      <p style="font-size:26px; line-height:1.35; color:#5F5849">Páginas, visuales y filtros de un reporte</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:12px; background:#FDFCF8; border:1px solid #DED9CC; border-radius:18px; padding:32px 34px">
+      <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:28px; font-weight:500; color:#A84A2B">ValueSearch</p>
+      <p style="font-size:26px; line-height:1.35; color:#5F5849">Encuentra cómo está escrito un valor</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:12px; background:#FDFCF8; border:1px solid #DED9CC; border-radius:18px; padding:32px 34px">
+      <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:28px; font-weight:500; color:#A84A2B">ExecuteQuery</p>
+      <p style="font-size:26px; line-height:1.35; color:#5F5849">Ejecuta DAX contra un semantic model</p>
+    </div>
+  </div>
+
+  <p style="font-size:34px; line-height:1.35; color:#141B22"><b>Ninguna crea, modifica ni administra nada.</b> <span style="color:#5F5849">Microsoft dejó la escritura en otros servidores, que este taller no usa.</span></p>
+
+  <div style="position:absolute; left:128px; right:128px; bottom:64px; display:flex; justify-content:space-between; align-items:center">
+    <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; color:#6E6858">claude-code-mcp-powerbi-workshop</p>
+    <p style="font-size:24px; color:#6E6858">14</p>
+  </div>
+
+  <aside>Léelas rápido, no una por una. Lo que quiero que noten son los verbos: Discover, Resolve, Get, Get, Search, Execute. No hay ni un Create, ni un Update, ni un Delete.
+
+Detenerse solo en dos. DiscoverArtifacts, porque significa que no necesitan ningún ID: le dicen el nombre del reporte y lo encuentra. Y ValueSearch, que es la que más van a agradecer: resuelve el clásico "mi medida devuelve blanco" cuando filtraron por Región Metropolitana y en el modelo dice RM.
+
+La línea de abajo cierra el argumento del taller. En el bloque 2 elegimos un servidor de solo lectura entre varias opciones. Acá fue Microsoft el que separó consumo de administración en servidores distintos, y nosotros tomamos el de consumo.
+
+Si preguntan por el de escritura: existe, es el Authoring MCP server, y el enlace está en el repo.</aside>
+</section>

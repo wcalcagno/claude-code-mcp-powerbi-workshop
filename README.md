@@ -104,6 +104,10 @@ El bloque de Fabric usa **Fabric IQ**, el servidor MCP oficial de Microsoft
 5. **[04-flujo-completo/](./04-flujo-completo/README.md)**
 6. **[recursos/enlaces.md](./recursos/enlaces.md)**
 
+> 🎤 **¿Vas a dictar este taller?** La presentación que se proyecta — 20
+> diapositivas con notas del orador — está en
+> **[presentacion/](./presentacion/README.md)**.
+
 ---
 
 ## Una nota importante: los dos MCP son de solo lectura

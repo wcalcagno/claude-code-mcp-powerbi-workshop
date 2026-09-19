@@ -1,0 +1,35 @@
+<section id="mcp" data-transition="fade" style="background:#F4F1EA; color:#141B22; font-family:'Rubik', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; justify-content:space-between; gap:56px">
+
+  <div style="display:flex; flex-direction:column; gap:16px">
+    <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; font-weight:500; letter-spacing:3px; text-transform:uppercase; color:#A84A2B">El protocolo</p>
+    <h2 style="font-size:72px; font-weight:600; line-height:1.15">MCP en una frase</h2>
+  </div>
+
+  <p style="font-size:48px; font-weight:400; line-height:1.35; width:1440px">Un enchufe estándar para que Claude Code se conecte a una herramienta externa. En nuestro caso, <b style="color:#A84A2B">tu modelo de Power BI</b>.</p>
+
+  <div style="display:flex; gap:32px; align-items:stretch">
+    <div style="flex:1; display:flex; flex-direction:column; gap:12px; background:#FDFCF8; border:1px solid #DED9CC; border-radius:20px; padding:40px 44px">
+      <p style="font-size:26px; font-weight:500; letter-spacing:2px; text-transform:uppercase; color:#6E6858">Ya conoces esto</p>
+      <h3 style="font-size:40px; font-weight:600; line-height:1.25">Un conector de Power Query</h3>
+      <p style="font-size:30px; line-height:1.4; color:#5F5849">Una forma estándar de que Power BI hable con un origen de datos.</p>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column; gap:12px; background:#FDFCF8; border:1px solid #DED9CC; border-radius:20px; padding:40px 44px">
+      <p style="font-size:26px; font-weight:500; letter-spacing:2px; text-transform:uppercase; color:#A84A2B">Es lo mismo</p>
+      <h3 style="font-size:40px; font-weight:600; line-height:1.25">Un servidor MCP</h3>
+      <p style="font-size:30px; line-height:1.4; color:#5F5849">Una forma estándar de que Claude Code hable con una herramienta.</p>
+    </div>
+  </div>
+
+  <div style="position:absolute; left:128px; right:128px; bottom:64px; display:flex; justify-content:space-between; align-items:center">
+    <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; color:#6E6858">claude-code-mcp-powerbi-workshop</p>
+    <p style="font-size:24px; color:#6E6858">04</p>
+  </div>
+
+  <aside>No expliques MCP como un protocolo. Explícalo como un conector, porque eso ya lo entienden.
+
+El argumento completo: antes de Power Query, cada herramienta inventaba su propia forma de conectarse a SQL Server, a Oracle, a un CSV. Power Query estandarizó eso. MCP hace lo mismo pero al revés: en vez de que la herramienta se conecte a los datos, el asistente se conecta a las herramientas.
+
+La consecuencia práctica, que es lo que les importa: cuando conectamos un servidor MCP, Claude Code gana herramientas nuevas. Deja de ser solo un editor de archivos y pasa a poder preguntarle cosas a tu modelo.
+
+No entrar en JSON, ni en stdio, ni en transportes. Eso está en el repo para quien quiera.</aside>
+</section>

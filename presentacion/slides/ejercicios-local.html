@@ -1,0 +1,43 @@
+<section id="ejercicios-local" data-transition="fade" style="background:#F4F1EA; color:#141B22; font-family:'Rubik', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; justify-content:space-between; gap:56px">
+
+  <div style="display:flex; flex-direction:column; gap:16px">
+    <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; font-weight:500; letter-spacing:3px; text-transform:uppercase; color:#A84A2B">Bloque 02 · MCP local</p>
+    <h2 style="font-size:72px; font-weight:600; line-height:1.15">Tres ejercicios sobre tu modelo</h2>
+  </div>
+
+  <div style="display:flex; gap:32px">
+    <div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#FDFCF8; border:1px solid #DED9CC; border-radius:20px; padding:44px">
+      <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:28px; font-weight:500; color:#A84A2B">01</p>
+      <h3 style="font-size:40px; font-weight:600; line-height:1.2">Explorar</h3>
+      <p style="font-size:30px; line-height:1.4; color:#5F5849">Tablas, columnas y relaciones. Te dice si es esquema de estrella y qué relación está inactiva.</p>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#FDFCF8; border:1px solid #DED9CC; border-radius:20px; padding:44px">
+      <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:28px; font-weight:500; color:#A84A2B">02</p>
+      <h3 style="font-size:40px; font-weight:600; line-height:1.2">Consultar</h3>
+      <p style="font-size:30px; line-height:1.4; color:#5F5849">Una consulta DAX, su explicación línea por línea, y tú la verificas contra una tarjeta.</p>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column; gap:16px; background:#FDFCF8; border:1px solid #DED9CC; border-radius:20px; padding:44px">
+      <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:28px; font-weight:500; color:#A84A2B">03</p>
+      <h3 style="font-size:40px; font-weight:600; line-height:1.2">Documentar</h3>
+      <p style="font-size:30px; line-height:1.4; color:#5F5849">Todas tus medidas con su DAX y su explicación de negocio, en un Markdown commiteado.</p>
+    </div>
+  </div>
+
+  <div style="display:flex; gap:20px; align-items:center">
+    <x-icon name="Lock" style="color:#A84A2B; width:32px; height:32px"></x-icon>
+    <p style="font-size:30px; line-height:1.35; color:#5F5849">El MCP solo leyó. El archivo lo escribe Claude Code en tu disco, que es una capacidad aparte y te pide permiso.</p>
+  </div>
+
+  <div style="position:absolute; left:128px; right:128px; bottom:64px; display:flex; justify-content:space-between; align-items:center">
+    <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; color:#6E6858">claude-code-mcp-powerbi-workshop</p>
+    <p style="font-size:24px; color:#6E6858">12</p>
+  </div>
+
+  <aside>Los tres prompts exactos están en el repo, carpeta 02, ejercicios. Que los copien de ahí, no los dictes.
+
+El tercero es el que se van a llevar al trabajo. Documentar un modelo heredado antes de tocarlo, o armar el anexo técnico de una entrega a cliente. Diez minutos y cero riesgo.
+
+Pero la línea de abajo es lo que quiero que entiendan de este bloque. Son dos capacidades separadas: la herramienta que toca el modelo no puede escribir nada, y la herramienta que escribe archivos no toca el modelo. Esa separación es la que hace que todo esto sea seguro.
+
+Y una instrucción explícita para el ejercicio 3: revisen la documentación generada. Claude leyó el DAX bien, pero la explicación de negocio puede estar equivocada. Él no sabe que en su empresa "Facturada" incluye las notas de crédito.</aside>
+</section>

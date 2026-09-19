@@ -1,0 +1,39 @@
+<section id="autenticacion" data-transition="fade" style="background:#F4F1EA; color:#141B22; font-family:'Rubik', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; justify-content:space-between; gap:48px">
+
+  <div style="display:flex; flex-direction:column; gap:16px">
+    <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; font-weight:500; letter-spacing:3px; text-transform:uppercase; color:#A84A2B">Bloque 03 · Entra ID</p>
+    <h2 style="font-size:72px; font-weight:600; line-height:1.15">Tu identidad, tus permisos</h2>
+  </div>
+
+  <div style="display:flex; gap:20px">
+    <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:28px; color:#141B22; background:#EDE8DC; border:1px solid #DED9CC; border-radius:999px; padding:16px 32px">Item.Read.All</p>
+    <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:28px; color:#141B22; background:#EDE8DC; border:1px solid #DED9CC; border-radius:999px; padding:16px 32px">Item.Execute.All</p>
+    <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:28px; color:#141B22; background:#EDE8DC; border:1px solid #DED9CC; border-radius:999px; padding:16px 32px">Dataset.Read.All</p>
+  </div>
+
+  <div style="display:flex; gap:32px">
+    <div style="flex:1; display:flex; flex-direction:column; gap:14px; background:#FDFCF8; border:1px solid #DED9CC; border-radius:20px; padding:44px">
+      <p style="font-size:26px; font-weight:500; letter-spacing:2px; text-transform:uppercase; color:#A84A2B">Lo que usamos</p>
+      <h3 style="font-size:44px; font-weight:600; line-height:1.2">Identidad delegada</h3>
+      <p style="font-size:30px; line-height:1.4; color:#5F5849">Claude Code actúa en tu nombre. Ves exactamente lo que ya ves en el navegador, y tu RLS se aplica igual.</p>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column; gap:14px; background:#FDFCF8; border:1px solid #DED9CC; border-radius:20px; padding:44px">
+      <p style="font-size:26px; font-weight:500; letter-spacing:2px; text-transform:uppercase; color:#6E6858">Lo que no existe</p>
+      <h3 style="font-size:44px; font-weight:600; line-height:1.2">Service principal</h3>
+      <p style="font-size:30px; line-height:1.4; color:#5F5849">Fabric IQ no lo admite. Nadie puede consultar como si fuera otra persona, ni saltarse tu seguridad por fila.</p>
+    </div>
+  </div>
+
+  <div style="position:absolute; left:128px; right:128px; bottom:64px; display:flex; justify-content:space-between; align-items:center">
+    <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; color:#6E6858">claude-code-mcp-powerbi-workshop</p>
+    <p style="font-size:24px; color:#6E6858">15</p>
+  </div>
+
+  <aside>Las tres pastillas de arriba son los permisos que van a ver en la pantalla de consentimiento de Microsoft. Léelas con ellos: Read, Execute, Read. Ningún Write.
+
+Y el punto fino, que es el que vale: no es que hayamos elegido pedir poco. Fabric IQ pide exactamente lo que necesita, porque no hace nada más. Servidor y permisos alineados. Ese es el chequeo de cordura que se llevan para cualquier integración: si una herramienta que dice "solo consultar" pide permisos de escritura, algo no cuadra.
+
+Sobre la tarjeta de la derecha, para los que administran: con service principal, Power BI no aplica RLS. Aquí eso simplemente no es una opción, lo cual es una buena noticia para un taller con cuarenta personas.
+
+Demostración que funciona muy bien: que dos personas sentadas juntas corran el mismo prompt. Van a obtener resultados distintos. Eso es identidad delegada, en vivo.</aside>
+</section>

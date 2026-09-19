@@ -1,0 +1,46 @@
+<section id="arquitectura-local" data-transition="fade" style="background:#F4F1EA; color:#141B22; font-family:'Rubik', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; justify-content:space-between; gap:48px">
+
+  <div style="display:flex; flex-direction:column; gap:16px">
+    <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; font-weight:500; letter-spacing:3px; text-transform:uppercase; color:#A84A2B">Bloque 02 · MCP local</p>
+    <h2 style="font-size:72px; font-weight:600; line-height:1.15">La ruta hasta tu modelo</h2>
+  </div>
+
+  <div style="display:flex; gap:0; align-items:stretch">
+    <div style="flex:1; display:flex; flex-direction:column; gap:14px; background:#FDFCF8; border:1px solid #DED9CC; border-radius:20px; padding:40px">
+      <h3 style="font-size:38px; font-weight:600; line-height:1.2">Power BI Desktop</h3>
+      <p style="font-size:28px; line-height:1.4; color:#5F5849">Tu .pbix abierto levanta un motor de Analysis Services en tu PC.</p>
+    </div>
+    <div style="width:88px; display:flex; align-items:center; justify-content:center">
+      <x-shape kind="arrow-right" style="width:64px; height:32px; background:#A84A2B"></x-shape>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column; gap:14px; background:#FDFCF8; border:1px solid #DED9CC; border-radius:20px; padding:40px">
+      <h3 style="font-size:38px; font-weight:600; line-height:1.2">Servidor MCP</h3>
+      <p style="font-size:28px; line-height:1.4; color:#5F5849">Un script Python que lee ese motor por XMLA. Solo lectura.</p>
+    </div>
+    <div style="width:88px; display:flex; align-items:center; justify-content:center">
+      <x-shape kind="arrow-right" style="width:64px; height:32px; background:#A84A2B"></x-shape>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column; gap:14px; background:#FDFCF8; border:1px solid #DED9CC; border-radius:20px; padding:40px">
+      <h3 style="font-size:38px; font-weight:600; line-height:1.2">Claude Code</h3>
+      <p style="font-size:28px; line-height:1.4; color:#5F5849">Pregunta por tablas, medidas y resultados de consultas DAX.</p>
+    </div>
+  </div>
+
+  <div style="display:flex; gap:20px; align-items:center; background:#F6E4DC; border:1px solid #E3B8A5; border-radius:16px; padding:28px 36px">
+    <x-icon name="Warning" style="color:#A84A2B; width:36px; height:36px"></x-icon>
+    <p style="font-size:30px; line-height:1.35; color:#141B22">Ese motor solo existe mientras Power BI Desktop tiene un reporte abierto. Si lo cierras, el MCP deja de responder.</p>
+  </div>
+
+  <div style="position:absolute; left:128px; right:128px; bottom:64px; display:flex; justify-content:space-between; align-items:center">
+    <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; color:#6E6858">claude-code-mcp-powerbi-workshop</p>
+    <p style="font-size:24px; color:#6E6858">11</p>
+  </div>
+
+  <aside>El dato que a este público le vuela la cabeza: cuando abren un .pbix, Power BI Desktop levanta en segundo plano el mismo motor de Analysis Services que corre en el Service. No es una versión reducida. Es el mismo motor, en su notebook.
+
+Ese motor escucha en un puerto local y acepta consultas. Eso es todo lo que hace el servidor MCP: se conecta a ese puerto y pregunta.
+
+Dos consecuencias que hay que dejar claras. Una: no hay credenciales en ninguna parte, porque es una conexión local a un proceso que ya está corriendo en su máquina. Dos: el recuadro de abajo. Si cierran Power BI Desktop, el puerto desaparece.
+
+Apuesto a que en los próximos veinte minutos alguien va a cerrar Power BI Desktop sin darse cuenta. Cuando pase, vuelve a esta slide en vez de explicarlo de nuevo.</aside>
+</section>

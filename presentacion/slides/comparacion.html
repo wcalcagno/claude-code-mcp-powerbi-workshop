@@ -1,0 +1,60 @@
+<section id="comparacion" data-transition="fade" style="background:#F4F1EA; color:#141B22; font-family:'Rubik', Arial, sans-serif; padding:128px 128px 160px; display:flex; flex-direction:column; justify-content:space-between; gap:44px">
+
+  <div style="display:flex; flex-direction:column; gap:16px">
+    <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; font-weight:500; letter-spacing:3px; text-transform:uppercase; color:#A84A2B">Bloque 04 · Cifras de ejemplo</p>
+    <h2 style="font-size:72px; font-weight:600; line-height:1.15">Local contra la nube</h2>
+  </div>
+
+  <table style="font-family:'Rubik', Arial, sans-serif; font-size:34px; color:#141B22; border:1px solid #DED9CC; border-radius:16px">
+    <tr style="background:#FDFCF8">
+      <th style="width:22%; text-align:left; font-weight:600; padding:18px 28px">Año</th>
+      <th style="width:26%; text-align:right; font-weight:600; padding:18px 28px">Local</th>
+      <th style="width:26%; text-align:right; font-weight:600; padding:18px 28px">Fabric</th>
+      <th style="width:26%; text-align:right; font-weight:600; padding:18px 28px">Diferencia</th>
+    </tr>
+    <tr>
+      <td>2024</td>
+      <td style="font-variant-numeric:tabular-nums">4.102.330</td>
+      <td style="font-variant-numeric:tabular-nums">3.980.115</td>
+      <td style="font-variant-numeric:tabular-nums; color:#A84A2B; font-weight:600">+122.215</td>
+    </tr>
+    <tr style="background:#FDFCF8">
+      <td>2023</td>
+      <td style="font-variant-numeric:tabular-nums">5.220.110</td>
+      <td style="font-variant-numeric:tabular-nums">5.220.110</td>
+      <td style="font-variant-numeric:tabular-nums; color:#5F5849">Sin diferencia</td>
+    </tr>
+    <tr>
+      <td>2022</td>
+      <td style="font-variant-numeric:tabular-nums">3.113.450</td>
+      <td style="font-variant-numeric:tabular-nums">3.113.450</td>
+      <td style="font-variant-numeric:tabular-nums; color:#5F5849">Sin diferencia</td>
+    </tr>
+  </table>
+
+  <div style="display:flex; gap:32px">
+    <div style="flex:1; display:flex; flex-direction:column; gap:12px; background:#FDFCF8; border:1px solid #DED9CC; border-radius:18px; padding:36px 40px">
+      <p style="font-size:26px; font-weight:500; letter-spacing:2px; text-transform:uppercase; color:#A84A2B">Hecho</p>
+      <p style="font-size:30px; line-height:1.4; color:#5F5849">Solo 2024 difiere. El modelo en Fabric se refrescó el 17-09 a las 06:00.</p>
+    </div>
+    <div style="flex:1; display:flex; flex-direction:column; gap:12px; background:#FDFCF8; border:1px solid #DED9CC; border-radius:18px; padding:36px 40px">
+      <p style="font-size:26px; font-weight:500; letter-spacing:2px; text-transform:uppercase; color:#6E6858">Hipótesis</p>
+      <p style="font-size:30px; line-height:1.4; color:#5F5849">El local tiene ventas cargadas después de ese refresco. La estructura es idéntica.</p>
+    </div>
+  </div>
+
+  <div style="position:absolute; left:128px; right:128px; bottom:64px; display:flex; justify-content:space-between; align-items:center">
+    <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; color:#6E6858">claude-code-mcp-powerbi-workshop</p>
+    <p style="font-size:24px; color:#6E6858">18</p>
+  </div>
+
+  <aside>Cifras de ejemplo. Lo que importa es la forma del resultado, no los números.
+
+Fíjate en la lectura: dos años coinciden exactamente y uno difiere, justo el año en curso. Eso descarta de entrada un problema de lógica del modelo. Si la diferencia estuviera repartida en todos los años, la conversación sería otra.
+
+Las dos tarjetas de abajo son el método, y es lo que quiero que copien. Hecho: lo que leímos de los modelos. Hipótesis: lo que deducimos. Separar esas dos cosas es lo que convierte esto en un análisis.
+
+Y el último paso, que Claude no puede dar: confirmar. Filtrar el modelo local a las transacciones posteriores al refresco y verificar que suman esos 122 mil. Eso lo hacen ellos.
+
+Cerrar recordando que la fecha del refresco no la entrega el MCP. La sacan del Service a mano. La herramienta no lo sabe todo.</aside>
+</section>

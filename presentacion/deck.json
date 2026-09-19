@@ -1,0 +1,71 @@
+{
+  "v": 4,
+  "createdOnFiles": {
+    "v": 1,
+    "at": "2026-09-18T12:00:00Z"
+  },
+  "title": "Claude Code + MCP para Power BI y Fabric",
+  "order": [
+    "portada",
+    "resultado",
+    "claude-code",
+    "mcp",
+    "solo-lectura",
+    "div-00",
+    "setup",
+    "div-01",
+    "comandos",
+    "div-02",
+    "arquitectura-local",
+    "ejercicios-local",
+    "div-03",
+    "fabric-iq",
+    "autenticacion",
+    "div-04",
+    "caso",
+    "comparacion",
+    "tres-ideas",
+    "cierre"
+  ],
+  "sections": {
+    "apertura": {
+      "description": "Qué es el taller, qué se llevan, qué son Claude Code y MCP, y por qué todo es de solo lectura.",
+      "start": "portada"
+    },
+    "setup": {
+      "description": "Bloque 00: Git, GitHub y Claude Code instalados y verificados.",
+      "start": "div-00"
+    },
+    "basico": {
+      "description": "Bloque 01: los comandos esenciales y el primer commit guiado.",
+      "start": "div-01"
+    },
+    "local": {
+      "description": "Bloque 02: el MCP de solo lectura sobre el modelo abierto en Power BI Desktop.",
+      "start": "div-02"
+    },
+    "fabric": {
+      "description": "Bloque 03: Fabric IQ, sus seis herramientas de lectura y la autenticación delegada con Entra ID.",
+      "start": "div-03"
+    },
+    "integrador": {
+      "description": "Bloque 04: el caso del lunes, la comparación local contra la nube y su diagnóstico.",
+      "start": "div-04"
+    },
+    "cierre": {
+      "description": "Las tres ideas para llevarse y el primer paso concreto después del taller.",
+      "start": "tres-ideas"
+    }
+  },
+  "faces": {
+    "rubik": {
+      "family": "Rubik",
+      "href": "https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600&display=swap"
+    },
+    "jetbrains-mono": {
+      "family": "JetBrains Mono",
+      "href": "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap"
+    }
+  },
+  "designSystems": []
+}
